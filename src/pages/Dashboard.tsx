@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Upload,
   History,
@@ -13,7 +13,6 @@ import {
   Clock,
   ChevronRight,
   ImageIcon,
-  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,20 +23,26 @@ import { RiskBadge } from "@/components/RiskBadge";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useAnalyses } from "@/hooks/useAnalyses";
+import { uploadTicketImage, createAnalysis, fileToBase64, analyzeTicket } from "@/lib/uploadTicket";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { user, profile, signOut } = useAuth();
   const { toast } = useToast();
+  const { recentAnalyses, stats, refetch } = useAnalyses();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 0) return;
+    if (acceptedFiles.length === 0 || !user) return;
     
     const file = acceptedFiles[0];
     
     // Check daily limit
-    if (profile?.current_plan === "free" && (profile?.daily_analyses_used ?? 0) >= 1) {
+    const limit = profile?.current_plan === "free" ? 1 : profile?.current_plan === "intermediate" ? 10 : Infinity;
+    if ((profile?.daily_analyses_used ?? 0) >= limit) {
       toast({
         title: "Limite diário atingido",
         description: "Faça upgrade do seu plano para mais análises.",
@@ -47,20 +52,54 @@ export default function Dashboard() {
     }
 
     setIsUploading(true);
-    toast({
-      title: "Processando bilhete...",
-      description: "Aguarde enquanto analisamos sua imagem.",
-    });
+    
+    try {
+      // Get auth token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
 
-    // TODO: Implement actual upload and analysis
-    setTimeout(() => {
-      setIsUploading(false);
+      // Convert file to base64 for the AI
+      const base64 = await fileToBase64(file);
+
+      // Upload image to storage
       toast({
-        title: "Análise em desenvolvimento",
-        description: "Esta funcionalidade será implementada em breve.",
+        title: "Enviando imagem...",
+        description: "Aguarde enquanto processamos sua imagem.",
       });
-    }, 2000);
-  }, [profile, toast]);
+      
+      const imageUrl = await uploadTicketImage(file, user.id);
+      
+      // Create analysis record
+      const analysisId = await createAnalysis(user.id, imageUrl);
+
+      // Analyze with AI
+      toast({
+        title: "Analisando bilhete...",
+        description: "Nossa IA está processando suas apostas.",
+      });
+
+      await analyzeTicket(base64, analysisId, session.access_token);
+
+      toast({
+        title: "Análise concluída! ✓",
+        description: "Redirecionando para os resultados...",
+      });
+
+      // Refetch analyses and redirect
+      refetch();
+      navigate(`/analysis/${analysisId}`);
+      
+    } catch (error) {
+      console.error("Error analyzing ticket:", error);
+      toast({
+        title: "Erro na análise",
+        description: error instanceof Error ? error.message : "Tente novamente com uma imagem mais clara.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  }, [user, profile, toast, navigate, refetch]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -100,30 +139,6 @@ export default function Dashboard() {
     }
   };
 
-  const recentAnalyses = [
-    {
-      id: "1",
-      date: "Hoje, 14:30",
-      games: 4,
-      risk: "medium" as const,
-      result: null,
-    },
-    {
-      id: "2",
-      date: "Ontem, 19:45",
-      games: 3,
-      risk: "low" as const,
-      result: "green" as const,
-    },
-    {
-      id: "3",
-      date: "12/01, 16:20",
-      games: 5,
-      risk: "high" as const,
-      result: "red" as const,
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar - Desktop */}
@@ -137,7 +152,11 @@ export default function Dashboard() {
             <Upload className="h-4 w-4" />
             Nova Análise
           </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3">
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start gap-3"
+            onClick={() => navigate("/history")}
+          >
             <History className="h-4 w-4" />
             Histórico
           </Button>
@@ -194,7 +213,14 @@ export default function Dashboard() {
                 <Upload className="h-4 w-4" />
                 Nova Análise
               </Button>
-              <Button variant="ghost" className="w-full justify-start gap-3">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-3"
+                onClick={() => {
+                  setSidebarOpen(false);
+                  navigate("/history");
+                }}
+              >
                 <History className="h-4 w-4" />
                 Histórico
               </Button>
@@ -308,19 +334,19 @@ export default function Dashboard() {
             <Card>
               <CardHeader className="pb-2">
                 <CardDescription>Taxa de Acerto</CardDescription>
-                <CardTitle className="text-3xl text-primary">68%</CardTitle>
+                <CardTitle className="text-3xl text-primary">{stats.winRate}%</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader className="pb-2">
                 <CardDescription>Greens no Mês</CardDescription>
-                <CardTitle className="text-3xl text-risk-low">12</CardTitle>
+                <CardTitle className="text-3xl text-risk-low">{stats.thisMonthGreens}</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader className="pb-2">
                 <CardDescription>Reds no Mês</CardDescription>
-                <CardTitle className="text-3xl text-risk-high">5</CardTitle>
+                <CardTitle className="text-3xl text-risk-high">{stats.thisMonthReds}</CardTitle>
               </CardHeader>
             </Card>
           </div>
@@ -332,43 +358,73 @@ export default function Dashboard() {
                 <CardTitle>Análises Recentes</CardTitle>
                 <CardDescription>Suas últimas análises de bilhetes</CardDescription>
               </div>
-              <Button variant="ghost" size="sm" className="gap-1">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="gap-1"
+                onClick={() => navigate("/history")}
+              >
                 Ver todas
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {recentAnalyses.map((analysis) => (
-                  <div
-                    key={analysis.id}
-                    className="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Clock className="h-5 w-5 text-primary" />
+              {recentAnalyses.length === 0 ? (
+                <div className="text-center py-8">
+                  <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
+                    Você ainda não fez nenhuma análise.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recentAnalyses.map((analysis) => {
+                    const betsCount = analysis.extracted_data?.bets?.length || 0;
+                    
+                    return (
+                      <div
+                        key={analysis.id}
+                        className="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+                        onClick={() => navigate(`/analysis/${analysis.id}`)}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                            <Clock className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium">
+                              {betsCount > 0 ? `${betsCount} jogos` : "Análise"}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {new Date(analysis.created_at).toLocaleDateString("pt-BR", {
+                                day: "2-digit",
+                                month: "short",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          {analysis.overall_risk && (
+                            <RiskBadge level={analysis.overall_risk} size="sm" showLabel={false} />
+                          )}
+                          {analysis.is_green !== null && (
+                            <span
+                              className={`text-sm font-medium ${
+                                analysis.is_green ? "text-risk-low" : "text-risk-high"
+                              }`}
+                            >
+                              {analysis.is_green ? "GREEN ✓" : "RED ✗"}
+                            </span>
+                          )}
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">{analysis.games} jogos</p>
-                        <p className="text-sm text-muted-foreground">{analysis.date}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <RiskBadge level={analysis.risk} size="sm" showLabel={false} />
-                      {analysis.result && (
-                        <span
-                          className={`text-sm font-medium ${
-                            analysis.result === "green" ? "text-risk-low" : "text-risk-high"
-                          }`}
-                        >
-                          {analysis.result === "green" ? "GREEN ✓" : "RED ✗"}
-                        </span>
-                      )}
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
 
