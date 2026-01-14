@@ -107,18 +107,18 @@ Deno.serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are an expert at reading betting slips/tickets. Extract all betting information from the image.
+            content: `Você é um especialista em ler bilhetes de apostas esportivas. Extraia todas as informações de apostas da imagem.
             
-Return a JSON object with this exact structure:
+Retorne um objeto JSON com esta estrutura exata:
 {
   "bets": [
     {
-      "homeTeam": "Team A",
-      "awayTeam": "Team B",
-      "market": "Over/Under Goals",
-      "line": "Over 2.5",
+      "homeTeam": "Time A",
+      "awayTeam": "Time B",
+      "market": "Gols Mais/Menos",
+      "line": "Mais de 2.5",
       "odds": 1.85,
-      "competition": "Premier League",
+      "competition": "Brasileirão",
       "matchDate": "2024-01-15"
     }
   ],
@@ -127,9 +127,9 @@ Return a JSON object with this exact structure:
   "potentialReturn": 525
 }
 
-Markets should be translated to English: "Mais de X gols" = "Over X", "Menos de" = "Under", "Vitória" = "Win", "Empate" = "Draw", "Handicap Asiático" = "Asian Handicap", "Ambas Marcam" = "Both Teams to Score", "Escanteios" = "Corners".
+Mantenha os nomes dos mercados em português: "Over X" = "Mais de X", "Under" = "Menos de", "Win" = "Vitória", "Draw" = "Empate", "Asian Handicap" = "Handicap Asiático", "Both Teams to Score" = "Ambas Marcam", "Corners" = "Escanteios".
 
-If you cannot read something clearly, make your best interpretation. Always return valid JSON.`
+Se não conseguir ler algo claramente, faça sua melhor interpretação. Sempre retorne JSON válido.`
           },
           {
             role: "user",
@@ -202,20 +202,20 @@ If you cannot read something clearly, make your best interpretation. Always retu
         messages: [
           {
             role: "system",
-            content: `You are an expert football betting analyst. Analyze each bet for risk and provide actionable insights.
+            content: `Você é um analista especialista em apostas de futebol. Analise cada aposta quanto ao risco e forneça insights acionáveis. RESPONDA SEMPRE EM PORTUGUÊS DO BRASIL.
 
-For each bet, assess:
-1. Historical performance of teams in this market
-2. Current form and trends
-3. Head-to-head history
-4. Value of the odds offered
+Para cada aposta, avalie:
+1. Desempenho histórico das equipes neste mercado
+2. Forma atual e tendências
+3. Histórico de confrontos diretos
+4. Valor das odds oferecidas
 
-Risk levels:
-- "low": Strong statistical backing, good value odds, favorable trends
-- "medium": Mixed signals, average value, some concerns
-- "high": Against recent trends, poor value, or risky market
+Níveis de risco:
+- "low": Forte embasamento estatístico, odds com bom valor, tendências favoráveis
+- "medium": Sinais mistos, valor médio, algumas preocupações
+- "high": Contra tendências recentes, valor ruim, ou mercado arriscado
 
-Return a JSON object:
+Retorne um objeto JSON:
 {
   "bets": [
     {
@@ -226,14 +226,14 @@ Return a JSON object:
       "odds": 1.85,
       "risk": "low|medium|high",
       "confidence": 75,
-      "reasoning": "Brief explanation of risk assessment",
-      "suggestion": "Alternative suggestion if risk is high",
-      "suggestedLine": "Over 1.5"
+      "reasoning": "Explicação breve da avaliação de risco em português",
+      "suggestion": "Sugestão alternativa se o risco for alto, em português",
+      "suggestedLine": "Mais de 1.5"
     }
   ],
   "overallRisk": "low|medium|high",
-  "summary": "Overall assessment of the ticket",
-  "recommendations": ["Tip 1", "Tip 2"]
+  "summary": "Avaliação geral do bilhete em português",
+  "recommendations": ["Dica 1 em português", "Dica 2 em português"]
 }`
           },
           {
