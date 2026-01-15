@@ -8,9 +8,12 @@ import {
   Brain, 
   CheckCircle,
   ArrowRight,
-  Zap,
-  Crown,
-  Sparkles
+  AlertTriangle,
+  BookOpen,
+  LineChart,
+  Users,
+  Lightbulb,
+  GraduationCap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,84 +24,112 @@ import { useAuth } from "@/contexts/AuthContext";
 const features = [
   {
     icon: Upload,
-    title: "Upload Inteligente",
-    description: "Envie a imagem do seu bilhete e nosso OCR extrai automaticamente todos os dados.",
+    title: "Leitura de Bilhetes",
+    description: "Envie a imagem do seu bilhete e nosso sistema extrai automaticamente jogos, mercados, linhas e odds.",
   },
   {
     icon: Brain,
-    title: "Análise com IA",
-    description: "Inteligência artificial analisa cada seleção com base em dados históricos e estatísticas.",
+    title: "Análise Estatística",
+    description: "Histórico recente, confrontos diretos, xG, gols, escanteios e contexto da partida para cada seleção.",
   },
   {
-    icon: Shield,
+    icon: AlertTriangle,
     title: "Identificação de Riscos",
-    description: "Classificação clara de riscos: 🟢 Baixo, 🟡 Médio, 🔴 Alto para cada aposta.",
+    description: "Classificação visual clara: 🟢 Baixo, 🟡 Moderado, 🔴 Alto risco — sempre com explicação objetiva.",
   },
   {
-    icon: Target,
+    icon: Lightbulb,
     title: "Sugestões Inteligentes",
-    description: "Receba alternativas menos agressivas e mais seguras para suas apostas.",
+    description: "Linhas menos agressivas, troca de mercado e ajustes estratégicos justificados por dados históricos.",
   },
   {
-    icon: TrendingUp,
-    title: "Histórico e Evolução",
-    description: "Acompanhe seu desempenho ao longo do tempo com gráficos detalhados.",
+    icon: LineChart,
+    title: "Perfil e Evolução",
+    description: "Acompanhe seu desempenho, identifique padrões e receba recomendações personalizadas ao seu perfil.",
   },
   {
-    icon: BarChart3,
-    title: "Gestão de Banca",
-    description: "Controle sua banca com cálculos de stakes e alertas de proteção.",
+    icon: GraduationCap,
+    title: "Educação Contínua",
+    description: "Conteúdos sobre gestão de banca, controle emocional e consistência no longo prazo.",
   },
 ];
 
 const plans = [
   {
-    name: "Free",
-    icon: Zap,
-    price: "R$ 0",
-    period: "/mês",
-    description: "Para começar a analisar",
+    name: "Start",
+    color: "text-success",
+    bgColor: "bg-success/10",
+    price: "Gratuito",
+    period: "",
+    description: "Para entender os riscos antes de apostar",
     features: [
-      "1 análise por dia",
-      "OCR de bilhetes",
-      "Análise básica de risco",
-      "Histórico limitado",
+      "1 análise de bilhete por dia",
+      "Identificação dos pontos de maior risco",
+      "Classificação: baixo, médio ou alto risco",
+      "Explicação objetiva de onde a aposta pode falhar",
+      "Conteúdos educativos básicos por e-mail",
     ],
     cta: "Começar Grátis",
     popular: false,
   },
   {
-    name: "Intermediário",
-    icon: Sparkles,
-    price: "R$ 29",
+    name: "Control",
+    color: "text-info",
+    bgColor: "bg-info/10",
+    price: "R$ 29,90",
     period: "/mês",
-    description: "Para apostadores regulares",
+    description: "Para apostar com mais critério e menos impulso",
     features: [
-      "10 análises por dia",
-      "Análise completa de risco",
-      "Sugestões de alternativas",
-      "Guia de gestão de banca",
-      "Emails educativos",
+      "Até 10 análises completas por dia",
+      "Análise detalhada por mercado",
+      "Sugestões de linhas menos agressivas",
+      "Avaliação de risco por seleção",
+      "Guia prático de gestão de banca",
+      "Relatórios semanais de comportamento",
     ],
-    cta: "Assinar Agora",
+    cta: "Assinar Control",
     popular: true,
   },
   {
-    name: "Avançado",
-    icon: Crown,
-    price: "R$ 59",
+    name: "Pro Analysis",
+    color: "text-primary",
+    bgColor: "bg-primary/10",
+    price: "R$ 59,90",
     period: "/mês",
-    description: "Para apostadores profissionais",
+    description: "Para quem busca consistência no longo prazo",
     features: [
       "Análises ilimitadas",
-      "IA adaptativa ao seu perfil",
-      "Gestão de banca completa",
-      "Relatórios por email",
-      "Gráficos de performance",
-      "Suporte prioritário",
+      "Histórico completo de análises",
+      "Gráficos de desempenho e exposição ao risco",
+      "Perfil de apostador personalizado",
+      "Gestão de banca avançada com alertas",
+      "Relatórios analíticos por e-mail",
     ],
-    cta: "Assinar Avançado",
+    cta: "Assinar Pro Analysis",
     popular: false,
+  },
+];
+
+const differentials = [
+  {
+    icon: Target,
+    title: "Análise Profissional de Scouting",
+    description: "Metodologia usada por analistas esportivos aplicada às suas apostas.",
+  },
+  {
+    icon: BarChart3,
+    title: "Estatística Aplicada",
+    description: "Dados históricos e métricas avançadas para embasar cada decisão.",
+  },
+  {
+    icon: BookOpen,
+    title: "Educação Contínua",
+    description: "Aprenda a apostar melhor com conteúdos práticos e objetivos.",
+  },
+  {
+    icon: Shield,
+    title: "Comunicação Preventiva",
+    description: "Alertas e recomendações focadas em proteção e disciplina.",
   },
 ];
 
@@ -137,32 +168,32 @@ export default function Landing() {
         <div className="container mx-auto px-4 relative">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-              <Sparkles className="h-4 w-4" />
-              Análise Inteligente de Apostas
+              <Shield className="h-4 w-4" />
+              Análise de Risco para Apostadores
             </div>
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-              Aposte com{" "}
-              <span className="text-gradient">Inteligência</span>,{" "}
+              O Bet Analyzer{" "}
+              <span className="text-gradient">não promete ganhos</span>.{" "}
               <br className="hidden md:block" />
-              Não com Emoção
+              Ele ajuda você a errar menos.
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              O Bet Analyzer usa IA para analisar seus bilhetes de apostas, 
-              identificar riscos e sugerir alternativas mais inteligentes. 
-              Pense como um analista profissional.
+              Análise estatística e contextual dos seus bilhetes. Identifique riscos, 
+              entenda onde sua aposta pode falhar e tome decisões mais racionais 
+              — sempre baseado em dados, nunca em promessas.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="gradient-primary text-primary-foreground glow-primary">
                 <Link to="/signup">
-                  Começar Grátis
+                  Analisar Meu Bilhete
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg">
-                <Link to="#features">Ver Recursos</Link>
+                <a href="#como-funciona">Como Funciona</a>
               </Button>
             </div>
 
@@ -175,26 +206,44 @@ export default function Landing() {
                 <CheckCircle className="h-5 w-5 text-primary" />
                 <span>1 análise grátis/dia</span>
               </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-primary" />
+                <span>Dados, não promessas</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Disclaimer Banner */}
+      <section className="py-6 bg-muted/50 border-y border-border/50">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center gap-3 text-center">
+            <AlertTriangle className="h-5 w-5 text-warning flex-shrink-0" />
+            <p className="text-sm text-muted-foreground">
+              <strong>Importante:</strong> O Bet Analyzer é uma ferramenta de análise estatística. 
+              Não garantimos ganhos. Apostas envolvem risco de perda.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
-      <section id="features" className="py-20 bg-muted/30">
+      <section id="como-funciona" className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center space-y-4 mb-16">
             <h2 className="text-3xl md:text-4xl font-bold">
-              Tudo que você precisa para apostar melhor
+              Como o Bet Analyzer te ajuda
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Ferramentas profissionais de análise ao alcance de todos os apostadores.
+              Ferramentas de análise profissional para apostadores recreativos 
+              que querem tomar decisões mais informadas.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
-              <Card key={index} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <Card key={index} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <feature.icon className="h-6 w-6 text-primary-foreground" />
@@ -212,15 +261,42 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20">
+      {/* Differentials Section */}
+      <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center space-y-4 mb-16">
             <h2 className="text-3xl md:text-4xl font-bold">
-              Planos para todos os perfis
+              O que torna o Bet Analyzer diferente
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Escolha o plano ideal para o seu nível de apostas.
+              Não somos tipsters. Somos uma ferramenta de análise e educação 
+              para apostadores que buscam consistência.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {differentials.map((item, index) => (
+              <div key={index} className="text-center space-y-4 p-6">
+                <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
+                  <item.icon className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="font-semibold text-lg">{item.title}</h3>
+                <p className="text-sm text-muted-foreground">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="planos" className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-4 mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold">
+              Planos para cada momento
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Do iniciante ao apostador que busca consistência no longo prazo.
             </p>
           </div>
 
@@ -228,21 +304,20 @@ export default function Landing() {
             {plans.map((plan, index) => (
               <Card 
                 key={index} 
-                className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : ''}`}
+                className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border/50'}`}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                     <span className="gradient-primary text-primary-foreground text-xs font-semibold px-4 py-1 rounded-full">
-                      Mais Popular
+                      Mais Escolhido
                     </span>
                   </div>
                 )}
                 <CardHeader className="text-center pb-4">
-                  <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center mx-auto mb-4">
-                    <plan.icon className="h-6 w-6 text-primary" />
+                  <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${plan.bgColor} ${plan.color} text-sm font-medium mx-auto mb-2`}>
+                    {plan.name}
                   </div>
-                  <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <CardDescription>{plan.description}</CardDescription>
+                  <CardDescription className="text-base">{plan.description}</CardDescription>
                   <div className="pt-4">
                     <span className="text-4xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground">{plan.period}</span>
@@ -251,8 +326,8 @@ export default function Landing() {
                 <CardContent className="space-y-4">
                   <ul className="space-y-3">
                     {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-3">
-                        <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <li key={i} className="flex items-start gap-3">
+                        <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                         <span className="text-sm">{feature}</span>
                       </li>
                     ))}
@@ -271,23 +346,32 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Educational CTA Section */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center space-y-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+              <GraduationCap className="h-4 w-4" />
+              Aposte com mais consciência
+            </div>
             <h2 className="text-3xl md:text-4xl font-bold">
-              Pronto para apostar com mais inteligência?
+              Pronto para entender melhor suas apostas?
             </h2>
             <p className="text-lg text-muted-foreground">
-              Junte-se a milhares de apostadores que já estão usando o Bet Analyzer 
-              para tomar decisões mais racionais e consistentes.
+              O primeiro passo para apostar melhor é entender os riscos. 
+              Comece hoje com uma análise gratuita e veja onde seu bilhete pode falhar.
             </p>
-            <Button asChild size="lg" className="gradient-primary text-primary-foreground glow-primary">
-              <Link to="/signup">
-                Criar Conta Grátis
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild size="lg" className="gradient-primary text-primary-foreground glow-primary">
+                <Link to="/signup">
+                  Criar Conta Grátis
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Lembre-se: apostas são entretenimento, não fonte de renda. Aposte com responsabilidade.
+            </p>
           </div>
         </div>
       </section>
@@ -310,6 +394,13 @@ export default function Landing() {
             </div>
             <p className="text-sm text-muted-foreground">
               © 2024 Bet Analyzer. Todos os direitos reservados.
+            </p>
+          </div>
+          <div className="mt-8 pt-8 border-t border-border/50 text-center">
+            <p className="text-xs text-muted-foreground max-w-2xl mx-auto">
+              O Bet Analyzer é uma ferramenta de análise estatística e educação para apostadores recreativos. 
+              Não garantimos ganhos e não somos responsáveis por perdas. Apostas envolvem risco. 
+              Se você ou alguém que conhece tem problemas com jogo, procure ajuda profissional.
             </p>
           </div>
         </div>
