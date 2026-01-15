@@ -7,13 +7,13 @@ interface LogoProps {
 
 export function Logo({ size = "md", showText = true }: LogoProps) {
   const sizeClasses = {
-    sm: "h-8",
-    md: "h-10",
-    lg: "h-16",
+    sm: "h-12",
+    md: "h-14",
+    lg: "h-20",
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center">
       <img 
         src={logoImage} 
         alt="BetAnalyzer Logo" 
