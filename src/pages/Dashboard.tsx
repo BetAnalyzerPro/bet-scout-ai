@@ -40,12 +40,21 @@ export default function Dashboard() {
     
     const file = acceptedFiles[0];
     
-    // Check daily limit
-    const limit = profile?.current_plan === "free" ? 1 : profile?.current_plan === "intermediate" ? 10 : Infinity;
+    // Check daily limit - map legacy plan names
+    const planLimits: Record<string, number> = {
+      'free': 1,
+      'start': 1,
+      'intermediate': 10,
+      'control': 10,
+      'advanced': Infinity,
+      'pro_analysis': Infinity,
+    };
+    const limit = planLimits[profile?.current_plan || 'free'] ?? 1;
+    
     if ((profile?.daily_analyses_used ?? 0) >= limit) {
       toast({
         title: "Limite diário atingido",
-        description: "Faça upgrade do seu plano para mais análises.",
+        description: "Considere fazer upgrade para mais análises diárias.",
         variant: "destructive",
       });
       return;
@@ -127,16 +136,34 @@ export default function Dashboard() {
   };
 
   const getAnalysesLimit = () => {
-    switch (profile?.current_plan) {
-      case "free":
-        return 1;
-      case "intermediate":
-        return 10;
-      case "advanced":
-        return "∞";
-      default:
-        return 1;
-    }
+    const plan = profile?.current_plan || 'free';
+    const limits: Record<string, string | number> = {
+      'free': 1,
+      'start': 1,
+      'intermediate': 10,
+      'control': 10,
+      'advanced': '∞',
+      'pro_analysis': '∞',
+    };
+    return limits[plan] ?? 1;
+  };
+
+  const getPlanDisplayName = () => {
+    const plan = profile?.current_plan || 'free';
+    const names: Record<string, string> = {
+      'free': 'Start',
+      'start': 'Start',
+      'intermediate': 'Control',
+      'control': 'Control',
+      'advanced': 'Pro Analysis',
+      'pro_analysis': 'Pro Analysis',
+    };
+    return names[plan] ?? 'Start';
+  };
+
+  const isFreePlan = () => {
+    const plan = profile?.current_plan || 'free';
+    return plan === 'free';
   };
 
   return (
@@ -299,21 +326,21 @@ export default function Dashboard() {
             >
               <input {...getInputProps()} />
               {isUploading ? (
-                <LoadingSpinner size="lg" text="Analisando seu bilhete..." />
+                <LoadingSpinner size="lg" text="Analisando riscos do seu bilhete..." />
               ) : (
                 <>
                   <div className="h-16 w-16 rounded-2xl gradient-primary flex items-center justify-center mx-auto mb-6">
                     <ImageIcon className="h-8 w-8 text-primary-foreground" />
                   </div>
                   <h3 className="text-xl font-semibold mb-2">
-                    {isDragActive ? "Solte a imagem aqui" : "Envie seu bilhete de apostas"}
+                    {isDragActive ? "Solte a imagem aqui" : "Analise os riscos do seu bilhete"}
                   </h3>
                   <p className="text-muted-foreground mb-4">
-                    Arraste uma imagem ou clique para selecionar
+                    Envie uma imagem e descubra onde sua aposta pode falhar
                   </p>
                   <Button className="gradient-primary text-primary-foreground">
                     <Plus className="h-4 w-4 mr-2" />
-                    Nova Análise
+                    Analisar Bilhete
                   </Button>
                 </>
               )}
@@ -429,17 +456,17 @@ export default function Dashboard() {
           </Card>
 
           {/* Upgrade Banner for Free Users */}
-          {profile?.current_plan === "free" && (
+          {isFreePlan() && (
             <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
               <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
                 <div>
-                  <h3 className="font-semibold text-lg">Quer mais análises?</h3>
+                  <h3 className="font-semibold text-lg">Quer analisar mais bilhetes?</h3>
                   <p className="text-muted-foreground">
-                    Faça upgrade e tenha acesso a até 10 análises por dia!
+                    Com o plano Control, você tem até 10 análises por dia e sugestões de linhas menos agressivas.
                   </p>
                 </div>
                 <Button className="gradient-primary text-primary-foreground whitespace-nowrap">
-                  Ver Planos
+                  Conhecer Planos
                 </Button>
               </CardContent>
             </Card>

@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
-import { Crown, Zap, Sparkles } from "lucide-react";
+import { Zap, Shield, TrendingUp } from "lucide-react";
 
-type Plan = "free" | "intermediate" | "advanced";
+type Plan = "start" | "control" | "pro_analysis" | "free" | "intermediate" | "advanced";
 
 interface PlanBadgeProps {
   plan: Plan;
@@ -9,25 +9,42 @@ interface PlanBadgeProps {
 }
 
 const planConfig = {
-  free: {
-    label: "Free",
+  // New plan names
+  start: {
+    label: "Start",
     icon: Zap,
-    className: "bg-muted text-muted-foreground border-border",
+    className: "bg-success/10 text-success border-success/30",
+  },
+  control: {
+    label: "Control",
+    icon: Shield,
+    className: "bg-info/10 text-info border-info/30",
+  },
+  pro_analysis: {
+    label: "Pro Analysis",
+    icon: TrendingUp,
+    className: "bg-primary/10 text-primary border-primary/30",
+  },
+  // Legacy plan names (for backwards compatibility)
+  free: {
+    label: "Start",
+    icon: Zap,
+    className: "bg-success/10 text-success border-success/30",
   },
   intermediate: {
-    label: "Intermediário",
-    icon: Sparkles,
+    label: "Control",
+    icon: Shield,
     className: "bg-info/10 text-info border-info/30",
   },
   advanced: {
-    label: "Avançado",
-    icon: Crown,
+    label: "Pro Analysis",
+    icon: TrendingUp,
     className: "bg-primary/10 text-primary border-primary/30",
   },
 };
 
 export function PlanBadge({ plan, size = "md" }: PlanBadgeProps) {
-  const config = planConfig[plan];
+  const config = planConfig[plan] || planConfig.start;
   const Icon = config.icon;
 
   const sizeClasses = {
