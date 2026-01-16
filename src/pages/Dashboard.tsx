@@ -187,11 +187,19 @@ export default function Dashboard() {
             <History className="h-4 w-4" />
             Histórico
           </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3">
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start gap-3"
+            onClick={() => navigate("/statistics")}
+          >
             <BarChart3 className="h-4 w-4" />
             Estatísticas
           </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3">
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start gap-3"
+            onClick={() => navigate("/settings")}
+          >
             <Settings className="h-4 w-4" />
             Configurações
           </Button>
@@ -251,11 +259,25 @@ export default function Dashboard() {
                 <History className="h-4 w-4" />
                 Histórico
               </Button>
-              <Button variant="ghost" className="w-full justify-start gap-3">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-3"
+                onClick={() => {
+                  setSidebarOpen(false);
+                  navigate("/statistics");
+                }}
+              >
                 <BarChart3 className="h-4 w-4" />
                 Estatísticas
               </Button>
-              <Button variant="ghost" className="w-full justify-start gap-3">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-3"
+                onClick={() => {
+                  setSidebarOpen(false);
+                  navigate("/settings");
+                }}
+              >
                 <Settings className="h-4 w-4" />
                 Configurações
               </Button>

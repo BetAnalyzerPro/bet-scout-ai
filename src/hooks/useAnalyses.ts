@@ -92,6 +92,7 @@ export function useAnalyses() {
 
   return {
     analyses,
+    allAnalyses: analyses,
     recentAnalyses,
     stats,
     loading,
