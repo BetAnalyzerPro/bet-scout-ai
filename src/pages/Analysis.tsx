@@ -14,6 +14,9 @@ import {
   Loader2,
   Check,
   X,
+  Goal,
+  CornerDownRight,
+  Percent,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,12 +40,28 @@ interface ExtractedBet {
   matchDate?: string;
 }
 
+interface MarketAnalysis {
+  market: string;
+  prediction: string;
+  confidence: number;
+  reasoning: string;
+}
+
+interface PredictedScore {
+  home: number;
+  away: number;
+  confidence: number;
+  reasoning: string;
+}
+
 interface AnalyzedBet extends ExtractedBet {
   risk: "low" | "medium" | "high";
   confidence: number;
   reasoning: string;
   suggestion?: string;
   suggestedLine?: string;
+  marketAnalyses?: MarketAnalysis[];
+  predictedScore?: PredictedScore;
 }
 
 interface AnalysisData {
@@ -409,19 +428,86 @@ export default function Analysis() {
 
                         {/* Reasoning */}
                         <div>
-                          <p className="text-sm font-medium mb-1">Análise:</p>
+                          <p className="text-sm font-medium mb-1">Análise Principal:</p>
                           <p className="text-sm text-muted-foreground">
                             {bet.reasoning || "Sem análise disponível."}
                           </p>
                         </div>
 
+                        {/* Market Analyses */}
+                        {bet.marketAnalyses && bet.marketAnalyses.length > 0 && (
+                          <div className="space-y-3">
+                            <p className="text-sm font-medium flex items-center gap-2">
+                              <CornerDownRight className="h-4 w-4 text-primary" />
+                              Análise por Mercado
+                            </p>
+                            <div className="grid gap-2">
+                              {bet.marketAnalyses.map((ma, maIndex) => (
+                                <div
+                                  key={maIndex}
+                                  className="p-3 rounded-lg bg-muted/50 border border-border"
+                                >
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="text-sm font-medium">{ma.market}</span>
+                                    <Badge 
+                                      variant="outline" 
+                                      className={`text-xs ${
+                                        ma.confidence >= 70 ? "border-risk-low text-risk-low" :
+                                        ma.confidence >= 50 ? "border-risk-medium text-risk-medium" :
+                                        "border-risk-high text-risk-high"
+                                      }`}
+                                    >
+                                      {ma.confidence}%
+                                    </Badge>
+                                  </div>
+                                  <p className="text-sm font-semibold text-primary mb-1">
+                                    {ma.prediction}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {ma.reasoning}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Predicted Score */}
+                        {bet.predictedScore && (
+                          <div className="p-4 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Goal className="h-5 w-5 text-primary" />
+                              <p className="font-semibold text-primary">Placar Exato Sugerido</p>
+                            </div>
+                            <div className="flex items-center justify-center gap-4 mb-3">
+                              <div className="text-center">
+                                <p className="text-xs text-muted-foreground mb-1">{bet.homeTeam}</p>
+                                <p className="text-3xl font-bold">{bet.predictedScore.home}</p>
+                              </div>
+                              <span className="text-2xl text-muted-foreground">×</span>
+                              <div className="text-center">
+                                <p className="text-xs text-muted-foreground mb-1">{bet.awayTeam}</p>
+                                <p className="text-3xl font-bold">{bet.predictedScore.away}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <Percent className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">Confiança:</span>
+                              <span className="text-sm font-medium">{bet.predictedScore.confidence}%</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              {bet.predictedScore.reasoning}
+                            </p>
+                          </div>
+                        )}
+
                         {/* Suggestion */}
                         {bet.suggestion && (
-                          <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
+                          <div className="p-3 rounded-lg bg-warning/10 border border-warning/20">
                             <div className="flex items-start gap-2">
-                              <Lightbulb className="h-4 w-4 text-primary mt-0.5" />
+                              <Lightbulb className="h-4 w-4 text-warning mt-0.5" />
                               <div>
-                                <p className="text-sm font-medium text-primary">Sugestão</p>
+                                <p className="text-sm font-medium text-warning">Sugestão</p>
                                 <p className="text-sm">{bet.suggestion}</p>
                                 {bet.suggestedLine && (
                                   <Badge variant="outline" className="mt-2">
