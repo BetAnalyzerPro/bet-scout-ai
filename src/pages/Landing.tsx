@@ -94,7 +94,7 @@ const plans = [
     name: "Pro Analysis",
     color: "text-primary",
     bgColor: "bg-primary/10",
-    price: "R$ 59,90",
+    price: "R$ 99,90",
     period: "/mês",
     description: "Para quem busca consistência no longo prazo",
     features: [
