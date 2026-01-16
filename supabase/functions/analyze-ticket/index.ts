@@ -15,12 +15,26 @@ interface ExtractedBet {
   matchDate?: string;
 }
 
+interface MarketAnalysis {
+  market: string;
+  prediction: string;
+  confidence: number;
+  reasoning: string;
+}
+
 interface AnalyzedBet extends ExtractedBet {
   risk: "low" | "medium" | "high";
   confidence: number;
   reasoning: string;
   suggestion?: string;
   suggestedLine?: string;
+  marketAnalyses?: MarketAnalysis[];
+  predictedScore?: {
+    home: number;
+    away: number;
+    confidence: number;
+    reasoning: string;
+  };
 }
 
 interface AnalysisResult {
@@ -188,8 +202,8 @@ Se não conseguir ler algo claramente, faça sua melhor interpretação. Sempre 
       };
     }
 
-    // Step 2: Analyze each bet for risk
-    console.log("Starting risk analysis...");
+    // Step 2: Analyze each bet for risk with comprehensive scout analysis
+    console.log("Starting comprehensive scout analysis...");
 
     const analysisResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -198,22 +212,48 @@ Se não conseguir ler algo claramente, faça sua melhor interpretação. Sempre 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-2.5-pro",
         messages: [
           {
             role: "system",
-            content: `Você é um analista especialista em apostas de futebol. Analise cada aposta quanto ao risco e forneça insights acionáveis. RESPONDA SEMPRE EM PORTUGUÊS DO BRASIL.
+            content: `Você é um SCOUT PROFISSIONAL de apostas esportivas com acesso a dados estatísticos completos. Analise cada aposta como um verdadeiro analista de futebol, considerando TODOS os mercados relevantes. RESPONDA SEMPRE EM PORTUGUÊS DO BRASIL.
 
-Para cada aposta, avalie:
-1. Desempenho histórico das equipes neste mercado
-2. Forma atual e tendências
-3. Histórico de confrontos diretos
-4. Valor das odds oferecidas
+## ANÁLISE OBRIGATÓRIA POR MERCADO
 
-Níveis de risco:
-- "low": Forte embasamento estatístico, odds com bom valor, tendências favoráveis
-- "medium": Sinais mistos, valor médio, algumas preocupações
-- "high": Contra tendências recentes, valor ruim, ou mercado arriscado
+Para CADA partida, você DEVE analisar TODOS estes mercados:
+
+### 1. ESCANTEIOS
+- **Escanteios 1º Tempo (HT)**: Mais/Menos de 3.5, 4.5, 5.5
+- **Escanteios Tempo Total (FT)**: Mais/Menos de 7.5, 8.5, 9.5, 10.5, 11.5, 12.5
+- **Escanteios por Equipe**: Qual time tende a ter mais escanteios
+- **Handicap de Escanteios**: Diferença esperada entre os times
+
+### 2. GOLS - TODAS AS LINHAS
+- **Gols 1º Tempo (HT)**: Mais/Menos de 0.5, 1.5, 2.5
+- **Gols Tempo Total (FT)**: Mais/Menos de 0.5, 1.5, 2.5, 3.5, 4.5, 5.5
+- **Ambas Marcam (BTTS)**: Sim/Não
+- **Ambas Marcam + Over**: Combinações
+
+### 3. RESULTADO
+- **Resultado 1º Tempo (HT)**: 1X2
+- **Resultado Final (FT)**: 1X2
+- **Dupla Chance**: 1X, 12, X2
+- **Empate Anula Aposta (Draw No Bet)**
+
+### 4. HANDICAP EUROPEU
+- **Handicap -1, -2, -3**: Para favoritos
+- **Handicap +1, +2, +3**: Para azarões
+- Avalie se o favorito vence por margem suficiente
+
+### 5. PLACAR EXATO
+Ao final de CADA análise de partida, forneça uma SUGESTÃO DE PLACAR EXATO baseada em:
+- Histórico de confrontos diretos (últimos 10 jogos)
+- Escalações prováveis e desfalques
+- Momento atual das equipes
+- Padrões de gols marcados/sofridos
+- Fator casa/fora
+
+## ESTRUTURA DE RESPOSTA
 
 Retorne um objeto JSON:
 {
@@ -224,21 +264,77 @@ Retorne um objeto JSON:
       "market": "...",
       "line": "...",
       "odds": 1.85,
+      "competition": "...",
       "risk": "low|medium|high",
       "confidence": 75,
-      "reasoning": "Explicação breve da avaliação de risco em português",
-      "suggestion": "Sugestão alternativa se o risco for alto, em português",
-      "suggestedLine": "Mais de 1.5"
+      "reasoning": "Análise detalhada considerando estatísticas, forma, H2H",
+      "suggestion": "Sugestão alternativa se aplicável",
+      "suggestedLine": "Linha sugerida",
+      "marketAnalyses": [
+        {
+          "market": "Escanteios FT",
+          "prediction": "Mais de 9.5",
+          "confidence": 72,
+          "reasoning": "Time A média 5.2 escanteios/jogo, Time B 4.8. H2H mostra média de 10.5"
+        },
+        {
+          "market": "Escanteios HT",
+          "prediction": "Mais de 4.5",
+          "confidence": 68,
+          "reasoning": "Ambos times são agressivos no início"
+        },
+        {
+          "market": "Gols FT",
+          "prediction": "Mais de 2.5",
+          "confidence": 70,
+          "reasoning": "Média combinada de 3.2 gols nos últimos 5 jogos"
+        },
+        {
+          "market": "Gols HT",
+          "prediction": "Mais de 0.5",
+          "confidence": 82,
+          "reasoning": "85% dos jogos de ambos têm gol no 1º tempo"
+        },
+        {
+          "market": "Resultado HT",
+          "prediction": "Time A ou Empate",
+          "confidence": 75,
+          "reasoning": "Time A não perde em casa no 1º tempo há 8 jogos"
+        },
+        {
+          "market": "Handicap Europeu",
+          "prediction": "Time A -1",
+          "confidence": 55,
+          "reasoning": "Favorito mas margem apertada"
+        }
+      ],
+      "predictedScore": {
+        "home": 2,
+        "away": 1,
+        "confidence": 65,
+        "reasoning": "Baseado no H2H (3 dos últimos 5 terminaram 2-1), escalação completa do mandante, e momento superior. Time A marca média 1.8 em casa, Time B sofre 1.3 fora."
+      }
     }
   ],
   "overallRisk": "low|medium|high",
-  "summary": "Avaliação geral do bilhete em português",
-  "recommendations": ["Dica 1 em português", "Dica 2 em português"]
-}`
+  "summary": "Avaliação geral do bilhete considerando todos os mercados analisados",
+  "recommendations": [
+    "Recomendação 1 baseada na análise completa",
+    "Recomendação 2",
+    "Recomendação 3"
+  ]
+}
+
+## IMPORTANTE
+- Seja específico com estatísticas (use números, percentuais, médias)
+- Considere fator casa/fora
+- Analise lesões e suspensões conhecidas
+- Avalie a importância do jogo para cada equipe
+- Use seu conhecimento de futebol para prever padrões táticos`
           },
           {
             role: "user",
-            content: `Analyze these bets for risk and provide insights:\n\n${JSON.stringify(extractedData.bets, null, 2)}\n\nTotal odds: ${extractedData.totalOdds}\n\nReturn only valid JSON.`
+            content: `Analise estas apostas como um SCOUT PROFISSIONAL, avaliando TODOS os mercados (escanteios HT/FT, gols todas linhas, resultado HT, handicap europeu) e forneça uma PREVISÃO DE PLACAR EXATO para cada partida:\n\n${JSON.stringify(extractedData.bets, null, 2)}\n\nOdds totais: ${extractedData.totalOdds}\n\nRetorne apenas JSON válido.`
           }
         ],
       }),
