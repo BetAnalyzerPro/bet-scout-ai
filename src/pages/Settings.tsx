@@ -118,8 +118,8 @@ export default function Settings() {
       start: "Gratuito",
       intermediate: "R$ 29,90/mês",
       control: "R$ 29,90/mês",
-      advanced: "R$ 59,90/mês",
-      pro_analysis: "R$ 59,90/mês",
+      advanced: "R$ 99,90/mês",
+      pro_analysis: "R$ 99,90/mês",
     };
     return prices[plan] ?? "Gratuito";
   };
