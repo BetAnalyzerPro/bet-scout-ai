@@ -81,6 +81,36 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Server-side rate limit validation
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("current_plan, daily_analyses_used")
+      .eq("user_id", user.id)
+      .single();
+
+    if (profileError) {
+      console.error("Failed to fetch user profile:", profileError);
+      return new Response(
+        JSON.stringify({ error: "Failed to verify user limits" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const planLimits: Record<string, number> = {
+      'free': 1,
+      'intermediate': 10,
+      'advanced': Infinity,
+    };
+    const limit = planLimits[profile?.current_plan || 'free'] ?? 1;
+
+    if ((profile?.daily_analyses_used ?? 0) >= limit) {
+      console.log(`Rate limit exceeded for user ${user.id}: ${profile?.daily_analyses_used}/${limit}`);
+      return new Response(
+        JSON.stringify({ error: "Limite diário de análises atingido. Faça upgrade do seu plano para mais análises." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { imageBase64, analysisId } = await req.json();
 
     if (!imageBase64) {
@@ -394,27 +424,11 @@ Retorne um objeto JSON:
         .eq("id", analysisId);
     }
 
-    // Update user's daily analysis count
+    // Update user's daily analysis count (profile was already fetched for rate limiting)
     await supabase
       .from("profiles")
-      .update({
-        daily_analyses_used: supabase.rpc("increment_analyses"),
-      })
+      .update({ daily_analyses_used: (profile.daily_analyses_used || 0) + 1 })
       .eq("user_id", user.id);
-
-    // Alternative: direct increment
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("daily_analyses_used")
-      .eq("user_id", user.id)
-      .single();
-
-    if (profile) {
-      await supabase
-        .from("profiles")
-        .update({ daily_analyses_used: (profile.daily_analyses_used || 0) + 1 })
-        .eq("user_id", user.id);
-    }
 
     console.log("Analysis complete!");
 
