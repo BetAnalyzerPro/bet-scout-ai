@@ -124,6 +124,53 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_feedback: {
+        Row: {
+          analysis_id: string | null
+          created_at: string
+          extracted_data: Json | null
+          id: string
+          image_url: string
+          match_info: Json | null
+          notes: string | null
+          result: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis_id?: string | null
+          created_at?: string
+          extracted_data?: Json | null
+          id?: string
+          image_url: string
+          match_info?: Json | null
+          notes?: string | null
+          result: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis_id?: string | null
+          created_at?: string
+          extracted_data?: Json | null
+          id?: string
+          image_url?: string
+          match_info?: Json | null
+          notes?: string | null
+          result?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_feedback_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "bet_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

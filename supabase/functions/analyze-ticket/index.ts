@@ -35,6 +35,7 @@ interface AnalyzedBet extends ExtractedBet {
     confidence: number;
     reasoning: string;
   };
+  footyStatsData?: any;
 }
 
 interface AnalysisResult {
@@ -49,7 +50,101 @@ interface AnalysisResult {
     overallRisk: "low" | "medium" | "high";
     summary: string;
     recommendations: string[];
+    apiConsensus?: string;
   };
+}
+
+interface FootyStatsMatch {
+  homeTeam: string;
+  awayTeam: string;
+  homeGoals?: number;
+  awayGoals?: number;
+  homeCorners?: number;
+  awayCorners?: number;
+  stats?: any;
+}
+
+// Function to fetch data from FootyStats API
+async function fetchFootyStatsData(homeTeam: string, awayTeam: string): Promise<any> {
+  const FOOTYSTATS_API_KEY = Deno.env.get("FOOTYSTATS_API_KEY");
+  if (!FOOTYSTATS_API_KEY) {
+    console.log("FootyStats API key not configured, skipping...");
+    return null;
+  }
+
+  try {
+    // Search for teams and get their stats
+    const searchUrl = `https://api.football-data-api.com/league-teams?key=${FOOTYSTATS_API_KEY}&include=stats`;
+    
+    console.log(`Fetching FootyStats data for ${homeTeam} vs ${awayTeam}...`);
+    
+    const response = await fetch(searchUrl);
+    
+    if (!response.ok) {
+      console.error("FootyStats API error:", response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    
+    // Try to find matching teams in the response
+    const homeStats = findTeamStats(data, homeTeam);
+    const awayStats = findTeamStats(data, awayTeam);
+
+    return {
+      homeTeamStats: homeStats,
+      awayTeamStats: awayStats,
+      source: "FootyStats"
+    };
+  } catch (error) {
+    console.error("Error fetching FootyStats data:", error);
+    return null;
+  }
+}
+
+// Helper function to find team stats in FootyStats response
+function findTeamStats(data: any, teamName: string): any {
+  if (!data || !data.data) return null;
+  
+  const normalizedName = teamName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  
+  for (const team of data.data) {
+    const apiTeamName = (team.name || team.cleanName || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (apiTeamName.includes(normalizedName) || normalizedName.includes(apiTeamName)) {
+      return team;
+    }
+  }
+  
+  return null;
+}
+
+// Fetch learning feedback to improve analysis
+async function fetchLearningContext(supabase: any): Promise<string> {
+  try {
+    const { data: feedbacks, error } = await supabase
+      .from("learning_feedback")
+      .select("result, extracted_data, match_info, notes")
+      .order("created_at", { ascending: false })
+      .limit(100);
+
+    if (error || !feedbacks || feedbacks.length === 0) {
+      return "";
+    }
+
+    const greenCount = feedbacks.filter((f: any) => f.result === "green").length;
+    const redCount = feedbacks.filter((f: any) => f.result === "red").length;
+    
+    return `
+## DADOS DE APRENDIZADO (baseado em ${feedbacks.length} apostas anteriores)
+- Taxa de acerto histórica: ${((greenCount / feedbacks.length) * 100).toFixed(1)}%
+- Greens: ${greenCount} | Reds: ${redCount}
+
+Use estes dados para calibrar suas previsões. Considere padrões de mercados que mais acertam e erram.
+`;
+  } catch (error) {
+    console.error("Error fetching learning context:", error);
+    return "";
+  }
 }
 
 Deno.serve(async (req) => {
@@ -136,6 +231,9 @@ Deno.serve(async (req) => {
         .update({ status: "processing" })
         .eq("id", analysisId);
     }
+
+    // Fetch learning context in parallel
+    const learningContextPromise = fetchLearningContext(supabase);
 
     console.log("Starting OCR extraction with Lovable AI...");
 
@@ -232,8 +330,33 @@ Se não conseguir ler algo claramente, faça sua melhor interpretação. Sempre 
       };
     }
 
+    // Fetch FootyStats data for each bet in parallel
+    console.log("Fetching FootyStats data for all matches...");
+    const footyStatsPromises = extractedData.bets.map(bet => 
+      fetchFootyStatsData(bet.homeTeam, bet.awayTeam)
+    );
+    const footyStatsResults = await Promise.all(footyStatsPromises);
+    
+    // Get learning context
+    const learningContext = await learningContextPromise;
+
+    // Build context string with FootyStats data
+    let footyStatsContext = "";
+    footyStatsResults.forEach((result, index) => {
+      if (result) {
+        const bet = extractedData.bets[index];
+        footyStatsContext += `\n### Dados FootyStats para ${bet.homeTeam} vs ${bet.awayTeam}:\n`;
+        if (result.homeTeamStats) {
+          footyStatsContext += `- ${bet.homeTeam}: ${JSON.stringify(result.homeTeamStats, null, 2)}\n`;
+        }
+        if (result.awayTeamStats) {
+          footyStatsContext += `- ${bet.awayTeam}: ${JSON.stringify(result.awayTeamStats, null, 2)}\n`;
+        }
+      }
+    });
+
     // Step 2: Analyze each bet for risk with comprehensive scout analysis
-    console.log("Starting comprehensive scout analysis...");
+    console.log("Starting comprehensive scout analysis with dual API data...");
 
     const analysisResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -246,7 +369,17 @@ Se não conseguir ler algo claramente, faça sua melhor interpretação. Sempre 
         messages: [
           {
             role: "system",
-            content: `Você é um SCOUT PROFISSIONAL de apostas esportivas com acesso a dados estatísticos completos. Analise cada aposta como um verdadeiro analista de futebol, considerando TODOS os mercados relevantes. RESPONDA SEMPRE EM PORTUGUÊS DO BRASIL.
+            content: `Você é um SCOUT PROFISSIONAL de apostas esportivas com acesso a dados estatísticos de MÚLTIPLAS FONTES (FootyStats e API Futebol). Sua análise deve considerar dados de ambas as fontes para chegar a conclusões mais precisas. RESPONDA SEMPRE EM PORTUGUÊS DO BRASIL.
+
+${learningContext}
+
+## ANÁLISE COM CONSENSO DE APIS
+
+Você receberá dados de diferentes fontes estatísticas. Analise criticamente cada fonte e:
+1. Compare os dados das diferentes APIs
+2. Identifique convergências (onde ambas concordam = maior confiança)
+3. Identifique divergências (onde discordam = cautela extra)
+4. Chegue a uma conclusão baseada no consenso dos dados
 
 ## ANÁLISE OBRIGATÓRIA POR MERCADO
 
@@ -282,6 +415,7 @@ Ao final de CADA análise de partida, forneça uma SUGESTÃO DE PLACAR EXATO bas
 - Momento atual das equipes
 - Padrões de gols marcados/sofridos
 - Fator casa/fora
+- CONSENSO ENTRE AS FONTES DE DADOS
 
 ## ESTRUTURA DE RESPOSTA
 
@@ -306,43 +440,13 @@ Retorne um objeto JSON:
           "prediction": "Mais de 9.5",
           "confidence": 72,
           "reasoning": "Time A média 5.2 escanteios/jogo, Time B 4.8. H2H mostra média de 10.5"
-        },
-        {
-          "market": "Escanteios HT",
-          "prediction": "Mais de 4.5",
-          "confidence": 68,
-          "reasoning": "Ambos times são agressivos no início"
-        },
-        {
-          "market": "Gols FT",
-          "prediction": "Mais de 2.5",
-          "confidence": 70,
-          "reasoning": "Média combinada de 3.2 gols nos últimos 5 jogos"
-        },
-        {
-          "market": "Gols HT",
-          "prediction": "Mais de 0.5",
-          "confidence": 82,
-          "reasoning": "85% dos jogos de ambos têm gol no 1º tempo"
-        },
-        {
-          "market": "Resultado HT",
-          "prediction": "Time A ou Empate",
-          "confidence": 75,
-          "reasoning": "Time A não perde em casa no 1º tempo há 8 jogos"
-        },
-        {
-          "market": "Handicap Europeu",
-          "prediction": "Time A -1",
-          "confidence": 55,
-          "reasoning": "Favorito mas margem apertada"
         }
       ],
       "predictedScore": {
         "home": 2,
         "away": 1,
         "confidence": 65,
-        "reasoning": "Baseado no H2H (3 dos últimos 5 terminaram 2-1), escalação completa do mandante, e momento superior. Time A marca média 1.8 em casa, Time B sofre 1.3 fora."
+        "reasoning": "Baseado no H2H (3 dos últimos 5 terminaram 2-1), escalação completa do mandante, e momento superior."
       }
     }
   ],
@@ -352,7 +456,8 @@ Retorne um objeto JSON:
     "Recomendação 1 baseada na análise completa",
     "Recomendação 2",
     "Recomendação 3"
-  ]
+  ],
+  "apiConsensus": "Resumo do consenso entre FootyStats e API Futebol - onde ambas concordam e onde divergem"
 }
 
 ## IMPORTANTE
@@ -360,11 +465,23 @@ Retorne um objeto JSON:
 - Considere fator casa/fora
 - Analise lesões e suspensões conhecidas
 - Avalie a importância do jogo para cada equipe
-- Use seu conhecimento de futebol para prever padrões táticos`
+- Use seu conhecimento de futebol para prever padrões táticos
+- DESTAQUE onde as APIs concordam (maior confiança) e onde divergem (mais cautela)`
           },
           {
             role: "user",
-            content: `Analise estas apostas como um SCOUT PROFISSIONAL, avaliando TODOS os mercados (escanteios HT/FT, gols todas linhas, resultado HT, handicap europeu) e forneça uma PREVISÃO DE PLACAR EXATO para cada partida:\n\n${JSON.stringify(extractedData.bets, null, 2)}\n\nOdds totais: ${extractedData.totalOdds}\n\nRetorne apenas JSON válido.`
+            content: `Analise estas apostas como um SCOUT PROFISSIONAL, usando dados de MÚLTIPLAS FONTES para chegar ao melhor consenso.
+
+## APOSTAS DO BILHETE:
+${JSON.stringify(extractedData.bets, null, 2)}
+
+Odds totais: ${extractedData.totalOdds}
+
+${footyStatsContext ? `## DADOS DA FOOTYSTATS API:${footyStatsContext}` : ""}
+
+Analise TODOS os mercados (escanteios HT/FT, gols todas linhas, resultado HT, handicap europeu) e forneça uma PREVISÃO DE PLACAR EXATO para cada partida, considerando o consenso entre as fontes de dados.
+
+Retorne apenas JSON válido.`
           }
         ],
       }),
@@ -406,6 +523,14 @@ Retorne um objeto JSON:
       };
     }
 
+    // Attach FootyStats data to each analyzed bet
+    if (analysis.bets) {
+      analysis.bets = analysis.bets.map((bet, index) => ({
+        ...bet,
+        footyStatsData: footyStatsResults[index] || null
+      }));
+    }
+
     const result: AnalysisResult = {
       extractedData,
       analysis,
@@ -430,7 +555,7 @@ Retorne um objeto JSON:
       .update({ daily_analyses_used: (profile.daily_analyses_used || 0) + 1 })
       .eq("user_id", user.id);
 
-    console.log("Analysis complete!");
+    console.log("Analysis complete with dual API data!");
 
     return new Response(
       JSON.stringify({ success: true, data: result }),
