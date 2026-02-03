@@ -2,8 +2,57 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+// Security constants
+const MAX_IMAGE_SIZE_MB = 5;
+const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
+const RATE_LIMIT_WINDOW_MINUTES = 60;
+const MAX_REQUESTS_PER_WINDOW = 20; // Extra protection beyond plan limits
+
+// Helper to extract IP from request
+function getClientIP(req: Request): string {
+  return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+         req.headers.get('cf-connecting-ip') || 
+         req.headers.get('x-real-ip') || 
+         'unknown';
+}
+
+// Helper to get user agent
+function getUserAgent(req: Request): string {
+  return req.headers.get('user-agent') || 'unknown';
+}
+
+// Validate base64 image
+function validateImageData(imageBase64: string): { valid: boolean; error?: string; mimeType?: string } {
+  // Check if it's a data URL or raw base64
+  let mimeType = 'image/jpeg';
+  let base64Data = imageBase64;
+  
+  if (imageBase64.startsWith('data:')) {
+    const match = imageBase64.match(/^data:([^;]+);base64,(.*)$/);
+    if (!match) {
+      return { valid: false, error: 'Invalid data URL format' };
+    }
+    mimeType = match[1];
+    base64Data = match[2];
+  }
+  
+  // Validate MIME type
+  if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
+    return { valid: false, error: `Invalid image type: ${mimeType}. Allowed: ${ALLOWED_MIME_TYPES.join(', ')}` };
+  }
+  
+  // Calculate approximate size (base64 is ~1.37x original size)
+  const approximateBytes = (base64Data.length * 3) / 4;
+  if (approximateBytes > MAX_IMAGE_SIZE_BYTES) {
+    return { valid: false, error: `Image too large. Maximum size: ${MAX_IMAGE_SIZE_MB}MB` };
+  }
+  
+  return { valid: true, mimeType };
+}
 
 interface ExtractedBet {
   homeTeam: string;
@@ -152,67 +201,184 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const clientIP = getClientIP(req);
+  const userAgent = getUserAgent(req);
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
   try {
+    // 1. Check IP-based rate limit first (before auth)
+    const { data: ipRateLimitOk } = await supabase.rpc('check_rate_limit', {
+      p_identifier: clientIP,
+      p_action: 'analysis',
+      p_max_count: MAX_REQUESTS_PER_WINDOW,
+      p_window_minutes: RATE_LIMIT_WINDOW_MINUTES
+    });
+
+    if (!ipRateLimitOk) {
+      console.log(`IP rate limit exceeded: ${clientIP}`);
+      await supabase.rpc('log_security_event', {
+        p_user_id: null,
+        p_event_type: 'rate_limit_exceeded',
+        p_ip_address: clientIP,
+        p_user_agent: userAgent,
+        p_metadata: { reason: 'ip_rate_limit' },
+        p_severity: 'warn'
+      });
+      return new Response(
+        JSON.stringify({ error: "Too many requests. Please try again later." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // 2. Validate authorization
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
+      await supabase.rpc('log_security_event', {
+        p_user_id: null,
+        p_event_type: 'invalid_token',
+        p_ip_address: clientIP,
+        p_user_agent: userAgent,
+        p_metadata: { reason: 'missing_auth_header' },
+        p_severity: 'warn'
+      });
       return new Response(
         JSON.stringify({ error: "Authorization header required" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Get user from token
+    // 3. Get user from token
     const token = authHeader.replace("Bearer ", "");
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
     if (userError || !user) {
+      await supabase.rpc('log_security_event', {
+        p_user_id: null,
+        p_event_type: 'invalid_token',
+        p_ip_address: clientIP,
+        p_user_agent: userAgent,
+        p_metadata: { error: userError?.message },
+        p_severity: 'warn'
+      });
       return new Response(
         JSON.stringify({ error: "Invalid token" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Server-side rate limit validation
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("current_plan, daily_analyses_used")
-      .eq("user_id", user.id)
-      .single();
+    // 4. Validate plan limits using secure DB function
+    const { data: planValidation, error: planError } = await supabase.rpc('validate_plan_limit', {
+      p_user_id: user.id,
+      p_action: 'analysis'
+    });
 
-    if (profileError) {
-      console.error("Failed to fetch user profile:", profileError);
+    if (planError || !planValidation?.allowed) {
+      const errorMessage = planValidation?.error || 'Plan validation failed';
+      console.log(`Plan limit exceeded for user ${user.id}: ${errorMessage}`);
+      
+      await supabase.rpc('log_security_event', {
+        p_user_id: user.id,
+        p_event_type: 'plan_limit_exceeded',
+        p_ip_address: clientIP,
+        p_user_agent: userAgent,
+        p_metadata: { limit: planValidation?.limit, used: planValidation?.used },
+        p_severity: 'info'
+      });
+      
       return new Response(
-        JSON.stringify({ error: "Failed to verify user limits" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const planLimits: Record<string, number> = {
-      'free': 1,
-      'intermediate': 10,
-      'advanced': Infinity,
-    };
-    const limit = planLimits[profile?.current_plan || 'free'] ?? 1;
-
-    if ((profile?.daily_analyses_used ?? 0) >= limit) {
-      console.log(`Rate limit exceeded for user ${user.id}: ${profile?.daily_analyses_used}/${limit}`);
-      return new Response(
-        JSON.stringify({ error: "Limite diário de análises atingido. Faça upgrade do seu plano para mais análises." }),
+        JSON.stringify({ 
+          error: "Limite diário de análises atingido. Faça upgrade do seu plano para mais análises.",
+          limit: planValidation?.limit,
+          used: planValidation?.used
+        }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const { imageBase64, analysisId } = await req.json();
+    // 5. Check if plan is active (for paid plans)
+    const { data: isPlanActive } = await supabase.rpc('is_plan_active', {
+      p_user_id: user.id
+    });
+
+    if (!isPlanActive) {
+      console.log(`Inactive plan for user ${user.id}`);
+      await supabase.rpc('log_security_event', {
+        p_user_id: user.id,
+        p_event_type: 'unauthorized_access',
+        p_ip_address: clientIP,
+        p_user_agent: userAgent,
+        p_metadata: { reason: 'plan_expired' },
+        p_severity: 'warn'
+      });
+      return new Response(
+        JSON.stringify({ error: "Seu plano expirou. Por favor, renove para continuar." }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // 6. Parse and validate request body
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON in request body" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const { imageBase64, analysisId } = requestBody;
 
     if (!imageBase64) {
       return new Response(
         JSON.stringify({ error: "Image data is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // 7. Validate image data (size, type)
+    const imageValidation = validateImageData(imageBase64);
+    if (!imageValidation.valid) {
+      console.log(`Image validation failed: ${imageValidation.error}`);
+      await supabase.rpc('log_security_event', {
+        p_user_id: user.id,
+        p_event_type: 'upload_rejected',
+        p_ip_address: clientIP,
+        p_user_agent: userAgent,
+        p_metadata: { reason: imageValidation.error },
+        p_severity: 'warn'
+      });
+      return new Response(
+        JSON.stringify({ error: imageValidation.error }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // 8. Validate analysis ID belongs to user (if provided)
+    if (analysisId) {
+      const { data: analysisOwner, error: ownerError } = await supabase
+        .from("bet_analyses")
+        .select("user_id")
+        .eq("id", analysisId)
+        .single();
+
+      if (ownerError || !analysisOwner || analysisOwner.user_id !== user.id) {
+        console.log(`IDOR attempt: User ${user.id} tried to access analysis ${analysisId}`);
+        await supabase.rpc('log_security_event', {
+          p_user_id: user.id,
+          p_event_type: 'unauthorized_access',
+          p_ip_address: clientIP,
+          p_user_agent: userAgent,
+          p_metadata: { analysisId, reason: 'idor_attempt' },
+          p_severity: 'error'
+        });
+        return new Response(
+          JSON.stringify({ error: "Invalid analysis ID" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -223,6 +389,9 @@ Deno.serve(async (req) => {
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Store profile for later use
+    const profile = planValidation;
 
     // Update analysis status to processing
     if (analysisId) {
@@ -549,11 +718,10 @@ Retorne apenas JSON válido.`
         .eq("id", analysisId);
     }
 
-    // Update user's daily analysis count (profile was already fetched for rate limiting)
-    await supabase
-      .from("profiles")
-      .update({ daily_analyses_used: (profile.daily_analyses_used || 0) + 1 })
-      .eq("user_id", user.id);
+    // Update user's daily analysis count using secure function
+    await supabase.rpc('increment_analysis_count', {
+      p_user_id: user.id
+    });
 
     console.log("Analysis complete with dual API data!");
 
@@ -564,6 +732,17 @@ Retorne apenas JSON válido.`
 
   } catch (error) {
     console.error("Error in analyze-ticket:", error);
+    
+    // Log critical errors
+    await supabase.rpc('log_security_event', {
+      p_user_id: null,
+      p_event_type: 'suspicious_activity',
+      p_ip_address: clientIP,
+      p_user_agent: userAgent,
+      p_metadata: { error: error instanceof Error ? error.message : 'Unknown error' },
+      p_severity: 'error'
+    });
+    
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : "Analysis failed" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
