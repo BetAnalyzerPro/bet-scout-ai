@@ -666,31 +666,69 @@ Retorne apenas JSON válido.`
     const analysisData = await analysisResponse.json();
     const analysisContent = analysisData.choices?.[0]?.message?.content || "";
     
-    console.log("Analysis response:", analysisContent);
+    console.log("Analysis response:", analysisContent.substring(0, 500) + "...");
 
     // Parse analysis
     let analysis: AnalysisResult["analysis"];
     try {
       let cleanJson = analysisContent.trim();
+      
+      // Remove markdown code blocks if present
       if (cleanJson.startsWith("```json")) {
         cleanJson = cleanJson.replace(/```json\n?/, "").replace(/\n?```$/, "");
       } else if (cleanJson.startsWith("```")) {
         cleanJson = cleanJson.replace(/```\n?/, "").replace(/\n?```$/, "");
       }
+      
+      // Try to find JSON object in the response if it starts with text
+      if (!cleanJson.startsWith("{") && !cleanJson.startsWith("[")) {
+        const jsonMatch = cleanJson.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          cleanJson = jsonMatch[0];
+        } else {
+          throw new Error("No JSON object found in response");
+        }
+      }
+      
+      // Handle truncated JSON - try to fix common issues
+      if (!cleanJson.endsWith("}") && !cleanJson.endsWith("]")) {
+        // Find the last complete object/array
+        let lastValidEnd = cleanJson.lastIndexOf("}");
+        if (lastValidEnd > 0) {
+          // Count braces to try to close properly
+          let openBraces = (cleanJson.substring(0, lastValidEnd + 1).match(/\{/g) || []).length;
+          let closeBraces = (cleanJson.substring(0, lastValidEnd + 1).match(/\}/g) || []).length;
+          
+          // Add missing closing braces
+          while (closeBraces < openBraces) {
+            cleanJson = cleanJson.substring(0, lastValidEnd + 1) + "}";
+            lastValidEnd++;
+            closeBraces++;
+          }
+          cleanJson = cleanJson.substring(0, lastValidEnd + 1);
+        }
+      }
+      
       analysis = JSON.parse(cleanJson);
     } catch (e) {
       console.error("Failed to parse analysis:", e);
-      // Provide fallback analysis
+      console.log("Raw content that failed to parse:", analysisContent.substring(0, 200));
+      
+      // Provide fallback analysis with more helpful information
       analysis = {
         bets: extractedData.bets.map(bet => ({
           ...bet,
           risk: "medium" as const,
           confidence: 50,
-          reasoning: "Unable to analyze - please review manually",
+          reasoning: "A IA retornou uma análise, mas houve um erro ao processar o formato. Por favor, tente novamente.",
         })),
         overallRisk: "medium",
-        summary: "Analysis incomplete - please review manually",
-        recommendations: ["Review each bet carefully before placing"],
+        summary: "Análise parcialmente processada. A IA gerou conteúdo, mas ocorreu um erro de formato. Tente enviar o bilhete novamente.",
+        recommendations: [
+          "Tente enviar o bilhete novamente",
+          "Certifique-se de que a imagem está nítida e bem iluminada",
+          "Se o problema persistir, entre em contato com o suporte"
+        ],
       };
     }
 
