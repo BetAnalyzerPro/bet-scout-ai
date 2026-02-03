@@ -3,7 +3,6 @@ import {
   BarChart3, 
   Shield, 
   Target, 
-  TrendingUp, 
   Upload, 
   Brain, 
   CheckCircle,
@@ -11,7 +10,6 @@ import {
   AlertTriangle,
   BookOpen,
   LineChart,
-  Users,
   Lightbulb,
   GraduationCap
 } from "lucide-react";
@@ -20,6 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
+import { PLANS, PRICING_PLANS, PAYWALL_MESSAGES } from "@/config/plans";
 
 const features = [
   {
@@ -51,62 +50,6 @@ const features = [
     icon: GraduationCap,
     title: "Educação Contínua",
     description: "Conteúdos sobre gestão de banca, controle emocional e consistência no longo prazo.",
-  },
-];
-
-const plans = [
-  {
-    name: "Start",
-    color: "text-success",
-    bgColor: "bg-success/10",
-    price: "Gratuito",
-    period: "",
-    description: "Para entender os riscos antes de apostar",
-    features: [
-      "1 análise de bilhete por dia",
-      "Identificação dos pontos de maior risco",
-      "Classificação: baixo, médio ou alto risco",
-      "Explicação objetiva de onde a aposta pode falhar",
-      "Conteúdos educativos básicos por e-mail",
-    ],
-    cta: "Começar Grátis",
-    popular: false,
-  },
-  {
-    name: "Control",
-    color: "text-info",
-    bgColor: "bg-info/10",
-    price: "R$ 29,90",
-    period: "/mês",
-    description: "Para apostar com mais critério e menos impulso",
-    features: [
-      "Até 10 análises completas por dia",
-      "Análise detalhada por mercado",
-      "Sugestões de linhas menos agressivas",
-      "Avaliação de risco por seleção",
-      "Guia prático de gestão de banca",
-      "Relatórios semanais de comportamento",
-    ],
-    cta: "Assinar Control",
-    popular: true,
-  },
-  {
-    name: "Pro Analysis",
-    color: "text-primary",
-    bgColor: "bg-primary/10",
-    price: "R$ 99,90",
-    period: "/mês",
-    description: "Para quem busca consistência no longo prazo",
-    features: [
-      "Análises ilimitadas",
-      "Histórico completo de análises",
-      "Gráficos de desempenho e exposição ao risco",
-      "Perfil de apostador personalizado",
-      "Gestão de banca avançada com alertas",
-      "Relatórios analíticos por e-mail",
-    ],
-    cta: "Assinar Pro Analysis",
-    popular: false,
   },
 ];
 
@@ -300,48 +243,54 @@ export default function Landing() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {plans.map((plan, index) => (
-              <Card 
-                key={index} 
-                className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border/50'}`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <span className="gradient-primary text-primary-foreground text-xs font-semibold px-4 py-1 rounded-full">
-                      Mais Escolhido
-                    </span>
-                  </div>
-                )}
-                <CardHeader className="text-center pb-4">
-                  <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${plan.bgColor} ${plan.color} text-sm font-medium mx-auto mb-2`}>
-                    {plan.name}
-                  </div>
-                  <CardDescription className="text-base">{plan.description}</CardDescription>
-                  <div className="pt-4">
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">{plan.period}</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <ul className="space-y-3">
-                    {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button 
-                    asChild 
-                    className={`w-full ${plan.popular ? 'gradient-primary text-primary-foreground' : ''}`}
-                    variant={plan.popular ? "default" : "outline"}
-                  >
-                    <Link to="/signup">{plan.cta}</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {PRICING_PLANS.map((planId) => {
+              const plan = PLANS[planId];
+              return (
+                <Card 
+                  key={planId} 
+                  className={`relative ${plan.isPopular ? 'border-primary shadow-lg scale-105 z-10' : 'border-border/50'}`}
+                >
+                  {plan.isPopular && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                      <span className="gradient-primary text-primary-foreground text-xs font-semibold px-4 py-1 rounded-full whitespace-nowrap">
+                        Mais Escolhido
+                      </span>
+                    </div>
+                  )}
+                  <CardHeader className="text-center pb-4">
+                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${plan.bgClass} ${plan.colorClass} text-sm font-medium mx-auto mb-2`}>
+                      <plan.icon className="h-4 w-4" />
+                      {plan.name}
+                    </div>
+                    <p className="text-xs text-muted-foreground font-medium">{plan.subtitle}</p>
+                    <CardDescription className="text-sm mt-2">{plan.description}</CardDescription>
+                    <div className="pt-4">
+                      <span className="text-3xl font-bold">{plan.price}</span>
+                      <span className="text-muted-foreground text-sm">{plan.period}</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <ul className="space-y-2">
+                      {plan.features.map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                          <span className="text-xs">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button 
+                      asChild 
+                      className={`w-full ${plan.isPopular ? 'gradient-primary text-primary-foreground' : ''}`}
+                      variant={plan.isPopular ? "default" : "outline"}
+                      size="sm"
+                    >
+                      <Link to="/signup">{plan.cta}</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>

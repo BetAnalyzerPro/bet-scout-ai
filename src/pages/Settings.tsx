@@ -25,6 +25,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { PlanBadge } from "@/components/PlanBadge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { getPlanFromDbValue, isFreePlan, PAYWALL_MESSAGES } from "@/config/plans";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -99,29 +100,17 @@ export default function Settings() {
   };
 
   const getPlanDisplayName = () => {
-    const plan = profile?.current_plan || "free";
-    const names: Record<string, string> = {
-      free: "Start",
-      start: "Start",
-      intermediate: "Control",
-      control: "Control",
-      advanced: "Pro Analysis",
-      pro_analysis: "Pro Analysis",
-    };
-    return names[plan] ?? "Start";
+    const planConfig = getPlanFromDbValue(profile?.current_plan || "free");
+    return planConfig.name;
   };
 
   const getPlanPrice = () => {
-    const plan = profile?.current_plan || "free";
-    const prices: Record<string, string> = {
-      free: "Gratuito",
-      start: "Gratuito",
-      intermediate: "R$ 29,90/mês",
-      control: "R$ 29,90/mês",
-      advanced: "R$ 99,90/mês",
-      pro_analysis: "R$ 99,90/mês",
-    };
-    return prices[plan] ?? "Gratuito";
+    const planConfig = getPlanFromDbValue(profile?.current_plan || "free");
+    return planConfig.price + planConfig.period;
+  };
+
+  const checkIsFreePlan = () => {
+    return isFreePlan(profile?.current_plan || "free");
   };
 
   return (
@@ -212,11 +201,11 @@ export default function Settings() {
               </Button>
             </div>
 
-            {["free", "start"].includes(profile?.current_plan || "free") && (
+            {checkIsFreePlan() && (
               <div className="mt-4 p-4 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
-                <p className="font-medium mb-1">Faça upgrade para mais recursos</p>
+                <p className="font-medium mb-1">{PAYWALL_MESSAGES.upgradeTitle}</p>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Desbloqueie mais análises, relatórios e gestão de banca.
+                  {PAYWALL_MESSAGES.upgradeDescription}
                 </p>
                 <Button className="gradient-primary text-primary-foreground" size="sm">
                   Ver Planos

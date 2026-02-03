@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAnalyses } from "@/hooks/useAnalyses";
 import { uploadTicketImage, createAnalysis, fileToBase64, analyzeTicket } from "@/lib/uploadTicket";
 import { supabase } from "@/integrations/supabase/client";
+import { getDailyLimit, getDisplayLimit, isFreePlan, getPlanFromDbValue, PAYWALL_MESSAGES } from "@/config/plans";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -41,21 +42,13 @@ export default function Dashboard() {
     
     const file = acceptedFiles[0];
     
-    // Check daily limit - map legacy plan names
-    const planLimits: Record<string, number> = {
-      'free': 1,
-      'start': 1,
-      'intermediate': 10,
-      'control': 10,
-      'advanced': Infinity,
-      'pro_analysis': Infinity,
-    };
-    const limit = planLimits[profile?.current_plan || 'free'] ?? 1;
+    // Check daily limit using centralized config
+    const limit = getDailyLimit(profile?.current_plan || 'free');
     
     if ((profile?.daily_analyses_used ?? 0) >= limit) {
       toast({
         title: "Limite diário atingido",
-        description: "Considere fazer upgrade para mais análises diárias.",
+        description: PAYWALL_MESSAGES.limitReached,
         variant: "destructive",
       });
       return;
@@ -137,34 +130,16 @@ export default function Dashboard() {
   };
 
   const getAnalysesLimit = () => {
-    const plan = profile?.current_plan || 'free';
-    const limits: Record<string, string | number> = {
-      'free': 1,
-      'start': 1,
-      'intermediate': 10,
-      'control': 10,
-      'advanced': '∞',
-      'pro_analysis': '∞',
-    };
-    return limits[plan] ?? 1;
+    return getDisplayLimit(profile?.current_plan || 'free');
   };
 
   const getPlanDisplayName = () => {
-    const plan = profile?.current_plan || 'free';
-    const names: Record<string, string> = {
-      'free': 'Start',
-      'start': 'Start',
-      'intermediate': 'Control',
-      'control': 'Control',
-      'advanced': 'Pro Analysis',
-      'pro_analysis': 'Pro Analysis',
-    };
-    return names[plan] ?? 'Start';
+    const planConfig = getPlanFromDbValue(profile?.current_plan || 'free');
+    return planConfig.name;
   };
 
-  const isFreePlan = () => {
-    const plan = profile?.current_plan || 'free';
-    return plan === 'free';
+  const checkIsFreePlan = () => {
+    return isFreePlan(profile?.current_plan || 'free');
   };
 
   return (
@@ -498,13 +473,13 @@ export default function Dashboard() {
           </Card>
 
           {/* Upgrade Banner for Free Users */}
-          {isFreePlan() && (
+          {checkIsFreePlan() && (
             <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
               <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
                 <div>
-                  <h3 className="font-semibold text-lg">Quer analisar mais bilhetes?</h3>
+                  <h3 className="font-semibold text-lg">{PAYWALL_MESSAGES.upgradeTitle}</h3>
                   <p className="text-muted-foreground">
-                    Com o plano Control, você tem até 10 análises por dia e sugestões de linhas menos agressivas.
+                    {PAYWALL_MESSAGES.upgradeDescription}
                   </p>
                 </div>
                 <Button className="gradient-primary text-primary-foreground whitespace-nowrap">
