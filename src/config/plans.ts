@@ -140,9 +140,9 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     cta: "Assinar Elite",
     isPopular: false,
     isHighlight: false,
-    colorClass: "text-destructive",
-    bgClass: "bg-destructive/10",
-    borderClass: "border-destructive/30",
+    colorClass: "text-purple-600 dark:text-purple-400",
+    bgClass: "bg-purple-600/10 dark:bg-purple-400/10",
+    borderClass: "border-purple-600/30 dark:border-purple-400/30",
   },
 };
 
