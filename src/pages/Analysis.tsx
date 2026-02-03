@@ -230,14 +230,14 @@ export default function Analysis() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border/50">
-        <div className="flex items-center justify-between p-4 max-w-5xl mx-auto">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+        <div className="flex items-center justify-between p-3 sm:p-4 max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")} className="h-10 w-10">
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-lg font-semibold">Análise do Bilhete</h1>
-              <p className="text-sm text-muted-foreground">
+              <h1 className="text-base sm:text-lg font-semibold">Análise do Bilhete</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {new Date(analysis.created_at).toLocaleDateString("pt-BR", {
                   day: "2-digit",
                   month: "short",
@@ -251,49 +251,49 @@ export default function Analysis() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
+      <main className="max-w-5xl mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
         {/* Overall Summary */}
         <Card className={`border-2 ${
           overallRisk === "low" ? "border-risk-low/30 bg-risk-low/5" :
           overallRisk === "high" ? "border-risk-high/30 bg-risk-high/5" :
           "border-risk-medium/30 bg-risk-medium/5"
         }`}>
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className={`h-16 w-16 rounded-2xl flex items-center justify-center ${
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className={`h-12 w-12 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 ${
                   overallRisk === "low" ? "bg-risk-low/20" :
                   overallRisk === "high" ? "bg-risk-high/20" :
                   "bg-risk-medium/20"
                 }`}>
                   {overallRisk === "low" ? (
-                    <CheckCircle2 className="h-8 w-8 text-risk-low" />
+                    <CheckCircle2 className="h-6 w-6 sm:h-8 sm:w-8 text-risk-low" />
                   ) : overallRisk === "high" ? (
-                    <XCircle className="h-8 w-8 text-risk-high" />
+                    <XCircle className="h-6 w-6 sm:h-8 sm:w-8 text-risk-high" />
                   ) : (
-                    <AlertTriangle className="h-8 w-8 text-risk-medium" />
+                    <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8 text-risk-medium" />
                   )}
                 </div>
-                <div>
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-2xl font-bold">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-bold">
                       Risco {overallRisk === "low" ? "Baixo" : overallRisk === "high" ? "Alto" : "Médio"}
                     </h2>
                     <RiskBadge level={overallRisk} />
                   </div>
-                  <p className="text-muted-foreground mt-1">
+                  <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
                     {analysisResult?.summary || "Análise concluída com sucesso."}
                   </p>
                 </div>
               </div>
               
-              <div className="flex flex-col items-end gap-2">
-                <div className="text-right">
-                  <p className="text-sm text-muted-foreground">Odd Total</p>
-                  <p className="text-2xl font-bold">{extractedData?.totalOdds?.toFixed(2) || "N/A"}</p>
+              <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                <div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Odd Total</p>
+                  <p className="text-xl sm:text-2xl font-bold">{extractedData?.totalOdds?.toFixed(2) || "N/A"}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground">{bets.length} seleções</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{bets.length} seleções</p>
                 </div>
               </div>
             </div>
@@ -302,11 +302,11 @@ export default function Analysis() {
 
         {/* Mark Result */}
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <p className="font-medium">Marcar Resultado</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="font-medium text-sm sm:text-base">Marcar Resultado</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Registre se o bilhete deu Green ou Red
                 </p>
               </div>
@@ -315,7 +315,7 @@ export default function Analysis() {
                   variant={analysis.is_green === true ? "default" : "outline"}
                   size="sm"
                   onClick={() => markResult(true)}
-                  className={analysis.is_green === true ? "bg-risk-low hover:bg-risk-low/90" : ""}
+                  className={`flex-1 sm:flex-initial h-10 sm:h-9 ${analysis.is_green === true ? "bg-risk-low hover:bg-risk-low/90" : ""}`}
                 >
                   <Check className="h-4 w-4 mr-1" />
                   GREEN
@@ -324,7 +324,7 @@ export default function Analysis() {
                   variant={analysis.is_green === false ? "default" : "outline"}
                   size="sm"
                   onClick={() => markResult(false)}
-                  className={analysis.is_green === false ? "bg-risk-high hover:bg-risk-high/90" : ""}
+                  className={`flex-1 sm:flex-initial h-10 sm:h-9 ${analysis.is_green === false ? "bg-risk-high hover:bg-risk-high/90" : ""}`}
                 >
                   <X className="h-4 w-4 mr-1" />
                   RED

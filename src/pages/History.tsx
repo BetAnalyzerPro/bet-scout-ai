@@ -122,14 +122,14 @@ export default function History() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border/50">
-        <div className="flex items-center justify-between p-4 max-w-5xl mx-auto">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+        <div className="flex items-center justify-between p-3 sm:p-4 max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")} className="h-10 w-10">
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-lg font-semibold">Histórico de Análises</h1>
-              <p className="text-sm text-muted-foreground">
+              <h1 className="text-base sm:text-lg font-semibold">Histórico de Análises</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {analyses.length} análises realizadas
               </p>
             </div>
@@ -138,44 +138,44 @@ export default function History() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
+      <main className="max-w-5xl mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
         {/* Stats Summary */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Total</p>
-              <p className="text-2xl font-bold">{stats.total}</p>
+            <CardContent className="p-3 sm:p-4">
+              <p className="text-xs sm:text-sm text-muted-foreground">Total</p>
+              <p className="text-xl sm:text-2xl font-bold">{stats.total}</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Taxa de Acerto</p>
-              <p className="text-2xl font-bold text-primary">{winRate}%</p>
+            <CardContent className="p-3 sm:p-4">
+              <p className="text-xs sm:text-sm text-muted-foreground">Taxa de Acerto</p>
+              <p className="text-xl sm:text-2xl font-bold text-primary">{winRate}%</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Greens</p>
-              <p className="text-2xl font-bold text-risk-low">{stats.greens}</p>
-              <p className="text-xs text-muted-foreground/70">Resultado Positivo</p>
+            <CardContent className="p-3 sm:p-4">
+              <p className="text-xs sm:text-sm text-muted-foreground">Greens</p>
+              <p className="text-xl sm:text-2xl font-bold text-risk-low">{stats.greens}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground/70">Resultado Positivo</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Reds</p>
-              <p className="text-2xl font-bold text-risk-high">{stats.reds}</p>
-              <p className="text-xs text-muted-foreground/70">Resultado Negativo</p>
+            <CardContent className="p-3 sm:p-4">
+              <p className="text-xs sm:text-sm text-muted-foreground">Reds</p>
+              <p className="text-xl sm:text-2xl font-bold text-risk-high">{stats.reds}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground/70">Resultado Negativo</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Filters */}
         <Card>
-          <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row gap-4">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
               <div className="flex-1">
                 <Select value={filterRisk} onValueChange={setFilterRisk}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 sm:h-10">
                     <SelectValue placeholder="Filtrar por risco" />
                   </SelectTrigger>
                   <SelectContent>
@@ -188,7 +188,7 @@ export default function History() {
               </div>
               <div className="flex-1">
                 <Select value={filterResult} onValueChange={setFilterResult}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 sm:h-10">
                     <SelectValue placeholder="Filtrar por resultado" />
                   </SelectTrigger>
                   <SelectContent>
@@ -204,13 +204,13 @@ export default function History() {
         </Card>
 
         {/* Analyses List */}
-        <div className="space-y-4">
+        <div className="space-y-2 sm:space-y-4">
           {filteredAnalyses.length === 0 ? (
             <Card>
-              <CardContent className="p-8 text-center">
-                <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2">Nenhuma análise encontrada</h3>
-                <p className="text-muted-foreground mb-2">
+              <CardContent className="p-6 sm:p-8 text-center">
+                <Clock className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+                <h3 className="text-base sm:text-lg font-medium mb-2">Nenhuma análise encontrada</h3>
+                <p className="text-sm text-muted-foreground mb-2">
                   {analyses.length === 0
                     ? "Você ainda não fez nenhuma análise."
                     : "Nenhuma análise corresponde aos filtros selecionados."}
@@ -220,7 +220,7 @@ export default function History() {
                     <p className="text-xs text-muted-foreground mb-4">
                       Quanto mais bilhetes você analisa e registra, mais precisas ficam suas estatísticas.
                     </p>
-                    <Button onClick={() => navigate("/dashboard")}>
+                    <Button onClick={() => navigate("/dashboard")} className="h-11 sm:h-10">
                       Fazer Primeira Análise
                     </Button>
                   </>
@@ -235,13 +235,13 @@ export default function History() {
               return (
                 <Card
                   key={analysis.id}
-                  className="hover:bg-muted/50 transition-colors cursor-pointer"
+                  className="hover:bg-muted/50 transition-colors cursor-pointer active:bg-muted/80"
                   onClick={() => navigate(`/analysis/${analysis.id}`)}
                 >
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                        <div className={`h-10 w-10 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 ${
                           analysis.status === "completed"
                             ? analysis.is_green === true
                               ? "bg-risk-low/20"
@@ -253,25 +253,25 @@ export default function History() {
                             : "bg-muted"
                         }`}>
                           {analysis.status === "processing" ? (
-                            <Loader2 className="h-5 w-5 text-warning animate-spin" />
+                            <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 text-warning animate-spin" />
                           ) : analysis.is_green === true ? (
-                            <Check className="h-5 w-5 text-risk-low" />
+                            <Check className="h-4 w-4 sm:h-5 sm:w-5 text-risk-low" />
                           ) : analysis.is_green === false ? (
-                            <X className="h-5 w-5 text-risk-high" />
+                            <X className="h-4 w-4 sm:h-5 sm:w-5 text-risk-high" />
                           ) : (
-                            <Clock className="h-5 w-5 text-primary" />
+                            <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                           )}
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className="font-medium">
+                            <p className="font-medium text-sm sm:text-base truncate">
                               {betsCount > 0 ? `${betsCount} seleções` : "Análise"}
                             </p>
                             {analysis.overall_risk && (
                               <RiskBadge level={analysis.overall_risk} size="sm" showLabel={false} />
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs sm:text-sm text-muted-foreground">
                             {new Date(analysis.created_at).toLocaleDateString("pt-BR", {
                               day: "2-digit",
                               month: "short",
@@ -282,18 +282,18 @@ export default function History() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
                         {totalOdds && (
-                          <Badge variant="secondary">@{totalOdds.toFixed(2)}</Badge>
+                          <Badge variant="secondary" className="text-xs">@{totalOdds.toFixed(2)}</Badge>
                         )}
                         {analysis.is_green !== null && (
-                          <span className={`text-sm font-medium ${
+                          <span className={`text-xs sm:text-sm font-medium ${
                             analysis.is_green ? "text-risk-low" : "text-risk-high"
                           }`}>
                             {analysis.is_green ? "GREEN" : "RED"}
                           </span>
                         )}
-                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        <ChevronRight className="h-4 w-4 text-muted-foreground hidden sm:block" />
                       </div>
                     </div>
                   </CardContent>

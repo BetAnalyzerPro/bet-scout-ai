@@ -310,23 +310,23 @@ export default function Dashboard() {
       <main className="flex-1 flex flex-col min-h-screen">
         {/* Header */}
         <header className="sticky top-0 z-40 glass border-b border-border/50">
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between p-3 sm:p-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden"
+                className="lg:hidden h-10 w-10"
                 onClick={() => setSidebarOpen(true)}
               >
                 <Menu className="h-5 w-5" />
               </Button>
               {/* Reforço de posicionamento */}
-              <div>
-                <h1 className="text-xl font-semibold">Dashboard</h1>
-                <p className="text-sm text-muted-foreground">
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-xl font-semibold">Dashboard</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   {profile?.daily_analyses_used || 0}/{getAnalysesLimit()} análises hoje
                 </p>
-                <p className="text-xs text-muted-foreground/70 mt-0.5">
+                <p className="text-[10px] sm:text-xs text-muted-foreground/70 mt-0.5 hidden sm:block">
                   Decidir com mais consciência é melhor do que apostar por impulso.
                 </p>
               </div>
@@ -336,12 +336,12 @@ export default function Dashboard() {
         </header>
 
         {/* Content */}
-        <div className="flex-1 p-4 md:p-6 space-y-6">
+        <div className="flex-1 p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
           {/* Upload Zone */}
           <Card className="border-dashed border-2 hover:border-primary/50 transition-colors">
             <div
               {...getRootProps()}
-              className={`p-8 md:p-12 text-center cursor-pointer transition-all ${
+              className={`p-6 sm:p-8 md:p-12 text-center cursor-pointer transition-all ${
                 isDragActive ? "bg-primary/5" : ""
               }`}
             >
@@ -350,16 +350,16 @@ export default function Dashboard() {
                 <LoadingSpinner size="lg" text="Analisando riscos do seu bilhete..." />
               ) : (
                 <>
-                  <div className="h-16 w-16 rounded-2xl gradient-primary flex items-center justify-center mx-auto mb-6">
-                    <ImageIcon className="h-8 w-8 text-primary-foreground" />
+                  <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl gradient-primary flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <ImageIcon className="h-6 w-6 sm:h-8 sm:w-8 text-primary-foreground" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">
+                  <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2">
                     {isDragActive ? "Solte a imagem aqui" : "Analise os riscos do seu bilhete"}
                   </h3>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-sm text-muted-foreground mb-3 sm:mb-4 px-2">
                     Envie uma imagem e descubra onde sua aposta pode falhar
                   </p>
-                  <Button className="gradient-primary text-primary-foreground">
+                  <Button className="gradient-primary text-primary-foreground h-11 sm:h-10">
                     <Plus className="h-4 w-4 mr-2" />
                     Analisar Bilhete
                   </Button>
@@ -369,64 +369,65 @@ export default function Dashboard() {
           </Card>
 
           {/* Stats Cards */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Análises Hoje</CardDescription>
-                <CardTitle className="text-3xl">
+              <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
+                <CardDescription className="text-xs sm:text-sm">Análises Hoje</CardDescription>
+                <CardTitle className="text-xl sm:text-2xl md:text-3xl">
                   {profile?.daily_analyses_used || 0}
-                  <span className="text-lg text-muted-foreground">/{getAnalysesLimit()}</span>
+                  <span className="text-sm sm:text-lg text-muted-foreground">/{getAnalysesLimit()}</span>
                 </CardTitle>
               </CardHeader>
             </Card>
             <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Taxa de Acerto</CardDescription>
-                <CardTitle className="text-3xl text-primary">{stats.winRate}%</CardTitle>
+              <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
+                <CardDescription className="text-xs sm:text-sm">Taxa de Acerto</CardDescription>
+                <CardTitle className="text-xl sm:text-2xl md:text-3xl text-primary">{stats.winRate}%</CardTitle>
               </CardHeader>
             </Card>
             <Card>
-              <CardHeader className="pb-2">
-                <CardDescription className="flex items-center gap-1">
-                  Greens no Mês
-                  <span className="text-xs text-muted-foreground/70">(Resultado Positivo)</span>
+              <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
+                <CardDescription className="text-xs sm:text-sm flex items-center gap-1">
+                  Greens
+                  <span className="text-[10px] text-muted-foreground/70 hidden sm:inline">(Positivo)</span>
                 </CardDescription>
-                <CardTitle className="text-3xl text-risk-low">{stats.thisMonthGreens}</CardTitle>
+                <CardTitle className="text-xl sm:text-2xl md:text-3xl text-risk-low">{stats.thisMonthGreens}</CardTitle>
               </CardHeader>
             </Card>
             <Card>
-              <CardHeader className="pb-2">
-                <CardDescription className="flex items-center gap-1">
-                  Reds no Mês
-                  <span className="text-xs text-muted-foreground/70">(Resultado Negativo)</span>
+              <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
+                <CardDescription className="text-xs sm:text-sm flex items-center gap-1">
+                  Reds
+                  <span className="text-[10px] text-muted-foreground/70 hidden sm:inline">(Negativo)</span>
                 </CardDescription>
-                <CardTitle className="text-3xl text-risk-high">{stats.thisMonthReds}</CardTitle>
+                <CardTitle className="text-xl sm:text-2xl md:text-3xl text-risk-high">{stats.thisMonthReds}</CardTitle>
               </CardHeader>
             </Card>
           </div>
 
           {/* Recent Analyses */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6">
               <div>
-                <CardTitle>Análises Recentes</CardTitle>
-                <CardDescription>Suas últimas análises de bilhetes</CardDescription>
+                <CardTitle className="text-base sm:text-lg">Análises Recentes</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">Suas últimas análises de bilhetes</CardDescription>
               </div>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="gap-1"
+                className="gap-1 h-9 px-2 sm:px-3"
                 onClick={() => navigate("/history")}
               >
-                Ver todas
+                <span className="hidden sm:inline">Ver todas</span>
+                <span className="sm:hidden">Ver</span>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-3 sm:p-6 pt-0">
               {recentAnalyses.length === 0 ? (
-                <div className="text-center py-8">
-                  <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground mb-2">
+                <div className="text-center py-6 sm:py-8">
+                  <Clock className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+                  <p className="text-sm text-muted-foreground mb-2">
                     Você ainda não fez nenhuma análise.
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -434,25 +435,25 @@ export default function Dashboard() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-2 sm:space-y-4">
                   {recentAnalyses.map((analysis) => {
                     const betsCount = analysis.extracted_data?.bets?.length || 0;
                     
                     return (
                       <div
                         key={analysis.id}
-                        className="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+                        className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer min-h-[56px] active:bg-muted/80"
                         onClick={() => navigate(`/analysis/${analysis.id}`)}
                       >
-                        <div className="flex items-center gap-4">
-                          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                            <Clock className="h-5 w-5 text-primary" />
+                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                          <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                           </div>
-                          <div>
-                            <p className="font-medium">
+                          <div className="min-w-0">
+                            <p className="font-medium text-sm sm:text-base truncate">
                               {betsCount > 0 ? `${betsCount} jogos` : "Análise"}
                             </p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-xs sm:text-sm text-muted-foreground">
                               {new Date(analysis.created_at).toLocaleDateString("pt-BR", {
                                 day: "2-digit",
                                 month: "short",
@@ -462,20 +463,20 @@ export default function Dashboard() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                           {analysis.overall_risk && (
                             <RiskBadge level={analysis.overall_risk} size="sm" showLabel={false} />
                           )}
                           {analysis.is_green !== null && (
                             <span
-                              className={`text-sm font-medium ${
+                              className={`text-xs sm:text-sm font-medium ${
                                 analysis.is_green ? "text-risk-low" : "text-risk-high"
                               }`}
                             >
                               {analysis.is_green ? "GREEN ✓" : "RED ✗"}
                             </span>
                           )}
-                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                          <ChevronRight className="h-4 w-4 text-muted-foreground hidden sm:block" />
                         </div>
                       </div>
                     );
@@ -488,14 +489,14 @@ export default function Dashboard() {
           {/* Upgrade Banner for Free Users */}
           {checkIsFreePlan() && (
             <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
-              <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
-                <div>
-                  <h3 className="font-semibold text-lg">{PAYWALL_MESSAGES.upgradeTitle}</h3>
-                  <p className="text-muted-foreground">
+              <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 p-4 sm:p-6">
+                <div className="text-center sm:text-left">
+                  <h3 className="font-semibold text-base sm:text-lg">{PAYWALL_MESSAGES.upgradeTitle}</h3>
+                  <p className="text-sm text-muted-foreground">
                     {PAYWALL_MESSAGES.upgradeDescription}
                   </p>
                 </div>
-                <Button className="gradient-primary text-primary-foreground whitespace-nowrap">
+                <Button className="gradient-primary text-primary-foreground whitespace-nowrap w-full sm:w-auto h-11 sm:h-10">
                   Conhecer Planos
                 </Button>
               </CardContent>
