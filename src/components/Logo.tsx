@@ -16,7 +16,7 @@ export function Logo({ size = "md", showText = true }: LogoProps) {
     <div className="flex items-center">
       <img 
         src={logoImage} 
-        alt="BetAnalyzer Logo" 
+        alt="Bet Analizer Logo" 
         className={`${sizeClasses[size]} w-auto`}
       />
     </div>

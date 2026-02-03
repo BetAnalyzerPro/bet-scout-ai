@@ -47,7 +47,7 @@ export default function Login() {
       await signIn(data.email, data.password);
       toast({
         title: "Login realizado!",
-        description: "Bem-vindo de volta ao Bet Analyzer.",
+        description: "Bem-vindo de volta ao Bet Analizer.",
       });
       navigate("/dashboard");
     } catch (error: any) {

@@ -174,7 +174,7 @@ export const PAYWALL_MESSAGES = {
   limitReached: "Você atingiu o limite do seu plano. Isso existe para evitar decisões impulsivas.",
   upgradeTitle: "Desbloquear mais clareza",
   upgradeDescription: "Desbloqueie mais análises e recursos avançados para tomar decisões mais conscientes.",
-  disclaimer: "Apostas envolvem risco. O Bet Analyzer não garante resultados.",
+  disclaimer: "Apostas envolvem risco. O Bet Analizer não garante resultados.",
 };
 
 // Plans to show on pricing page (ordered)

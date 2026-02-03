@@ -116,7 +116,7 @@ export default function Landing() {
             </div>
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-              O Bet Analyzer{" "}
+              O Bet Analizer{" "}
               <span className="text-gradient">não promete ganhos</span>.{" "}
               <br className="hidden md:block" />
               Ele ajuda você a errar menos.
@@ -164,7 +164,7 @@ export default function Landing() {
           <div className="flex items-center justify-center gap-3 text-center">
             <AlertTriangle className="h-5 w-5 text-warning flex-shrink-0" />
             <p className="text-sm text-muted-foreground">
-              <strong>Importante:</strong> O Bet Analyzer é uma ferramenta de análise estatística. 
+              <strong>Importante:</strong> O Bet Analizer é uma ferramenta de análise estatística. 
               Não garantimos ganhos. Apostas envolvem risco de perda.
             </p>
           </div>
@@ -176,7 +176,7 @@ export default function Landing() {
         <div className="container mx-auto px-4">
           <div className="text-center space-y-4 mb-16">
             <h2 className="text-3xl md:text-4xl font-bold">
-              Como o Bet Analyzer te ajuda
+              Como o Bet Analizer te ajuda
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Ferramentas de análise profissional para apostadores recreativos 
@@ -209,7 +209,7 @@ export default function Landing() {
         <div className="container mx-auto px-4">
           <div className="text-center space-y-4 mb-16">
             <h2 className="text-3xl md:text-4xl font-bold">
-              O que torna o Bet Analyzer diferente
+              O que torna o Bet Analizer diferente
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Não somos tipsters. Somos uma ferramenta de análise e educação 
@@ -342,12 +342,12 @@ export default function Landing() {
               </Link>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2024 Bet Analyzer. Todos os direitos reservados.
+              © 2024 Bet Analizer. Todos os direitos reservados.
             </p>
           </div>
           <div className="mt-8 pt-8 border-t border-border/50 text-center">
             <p className="text-xs text-muted-foreground max-w-2xl mx-auto">
-              O Bet Analyzer é uma ferramenta de análise estatística e educação para apostadores recreativos. 
+              O Bet Analizer é uma ferramenta de análise estatística e educação para apostadores recreativos. 
               Não garantimos ganhos e não somos responsáveis por perdas. Apostas envolvem risco. 
               Se você ou alguém que conhece tem problemas com jogo, procure ajuda profissional.
             </p>
