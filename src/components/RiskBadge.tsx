@@ -1,8 +1,9 @@
+import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
 
 type RiskLevel = "low" | "medium" | "high";
 
-interface RiskBadgeProps {
+interface RiskBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   level: RiskLevel;
   size?: "sm" | "md" | "lg";
   showLabel?: boolean;
@@ -26,25 +27,32 @@ const riskConfig = {
   },
 };
 
-export function RiskBadge({ level, size = "md", showLabel = true }: RiskBadgeProps) {
-  const config = riskConfig[level];
+export const RiskBadge = forwardRef<HTMLSpanElement, RiskBadgeProps>(
+  ({ level, size = "md", showLabel = true, className, ...props }, ref) => {
+    const config = riskConfig[level];
 
-  const sizeClasses = {
-    sm: "text-xs px-2 py-0.5",
-    md: "text-sm px-3 py-1",
-    lg: "text-base px-4 py-1.5",
-  };
+    const sizeClasses = {
+      sm: "text-xs px-2 py-0.5",
+      md: "text-sm px-3 py-1",
+      lg: "text-base px-4 py-1.5",
+    };
 
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border font-medium",
-        config.className,
-        sizeClasses[size]
-      )}
-    >
-      <span>{config.emoji}</span>
-      {showLabel && <span>Risco {config.label}</span>}
-    </span>
-  );
-}
+    return (
+      <span
+        ref={ref}
+        className={cn(
+          "inline-flex items-center gap-1.5 rounded-full border font-medium",
+          config.className,
+          sizeClasses[size],
+          className
+        )}
+        {...props}
+      >
+        <span>{config.emoji}</span>
+        {showLabel && <span>Risco {config.label}</span>}
+      </span>
+    );
+  }
+);
+
+RiskBadge.displayName = "RiskBadge";
