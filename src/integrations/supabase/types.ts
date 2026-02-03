@@ -182,6 +182,9 @@ export type Database = {
           id: string
           last_analysis_reset: string | null
           marketing_consent: boolean
+          payment_provider: string | null
+          plan_expires_at: string | null
+          subscription_id: string | null
           updated_at: string
           user_id: string
         }
@@ -195,6 +198,9 @@ export type Database = {
           id?: string
           last_analysis_reset?: string | null
           marketing_consent?: boolean
+          payment_provider?: string | null
+          plan_expires_at?: string | null
+          subscription_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -208,8 +214,119 @@ export type Database = {
           id?: string
           last_analysis_reset?: string | null
           marketing_consent?: boolean
+          payment_provider?: string | null
+          plan_expires_at?: string | null
+          subscription_id?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      rate_limits: {
+        Row: {
+          action: string
+          count: number
+          created_at: string
+          id: string
+          identifier: string
+          updated_at: string
+          window_start: string
+        }
+        Insert: {
+          action: string
+          count?: number
+          created_at?: string
+          id?: string
+          identifier: string
+          updated_at?: string
+          window_start?: string
+        }
+        Update: {
+          action?: string
+          count?: number
+          created_at?: string
+          id?: string
+          identifier?: string
+          updated_at?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      security_logs: {
+        Row: {
+          created_at: string
+          event_type: Database["public"]["Enums"]["security_event_type"]
+          id: string
+          ip_address: unknown
+          metadata: Json | null
+          severity: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: Database["public"]["Enums"]["security_event_type"]
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          severity?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: Database["public"]["Enums"]["security_event_type"]
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          severity?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      subscription_events: {
+        Row: {
+          amount: number | null
+          created_at: string
+          currency: string | null
+          event_type: string
+          external_id: string | null
+          id: string
+          metadata: Json | null
+          plan_id: string | null
+          processed_at: string | null
+          provider: string
+          status: Database["public"]["Enums"]["subscription_status"]
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          event_type: string
+          external_id?: string | null
+          id?: string
+          metadata?: Json | null
+          plan_id?: string | null
+          processed_at?: string | null
+          provider: string
+          status: Database["public"]["Enums"]["subscription_status"]
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          event_type?: string
+          external_id?: string | null
+          id?: string
+          metadata?: Json | null
+          plan_id?: string | null
+          processed_at?: string | null
+          provider?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -236,6 +353,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_rate_limit: {
+        Args: {
+          p_action: string
+          p_identifier: string
+          p_max_count: number
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
+      cleanup_old_rate_limits: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -243,12 +370,52 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_analysis_count: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
+      is_plan_active: { Args: { p_user_id: string }; Returns: boolean }
+      log_security_event: {
+        Args: {
+          p_event_type: Database["public"]["Enums"]["security_event_type"]
+          p_ip_address?: string
+          p_metadata?: Json
+          p_severity?: string
+          p_user_agent?: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      validate_plan_limit: {
+        Args: { p_action: string; p_user_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       analysis_status: "pending" | "processing" | "completed" | "failed"
       app_role: "admin" | "user"
       risk_level: "low" | "medium" | "high"
+      security_event_type:
+        | "login_attempt"
+        | "login_failed"
+        | "login_success"
+        | "logout"
+        | "rate_limit_exceeded"
+        | "plan_limit_exceeded"
+        | "suspicious_activity"
+        | "upload_rejected"
+        | "invalid_token"
+        | "unauthorized_access"
+        | "payment_webhook"
+        | "subscription_change"
+        | "account_blocked"
       subscription_plan: "free" | "intermediate" | "advanced"
+      subscription_status:
+        | "active"
+        | "canceled"
+        | "expired"
+        | "blocked"
+        | "pending"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -379,7 +546,29 @@ export const Constants = {
       analysis_status: ["pending", "processing", "completed", "failed"],
       app_role: ["admin", "user"],
       risk_level: ["low", "medium", "high"],
+      security_event_type: [
+        "login_attempt",
+        "login_failed",
+        "login_success",
+        "logout",
+        "rate_limit_exceeded",
+        "plan_limit_exceeded",
+        "suspicious_activity",
+        "upload_rejected",
+        "invalid_token",
+        "unauthorized_access",
+        "payment_webhook",
+        "subscription_change",
+        "account_blocked",
+      ],
       subscription_plan: ["free", "intermediate", "advanced"],
+      subscription_status: [
+        "active",
+        "canceled",
+        "expired",
+        "blocked",
+        "pending",
+      ],
     },
   },
 } as const
