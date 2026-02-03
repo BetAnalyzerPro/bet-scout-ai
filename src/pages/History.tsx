@@ -157,12 +157,14 @@ export default function History() {
             <CardContent className="p-4">
               <p className="text-sm text-muted-foreground">Greens</p>
               <p className="text-2xl font-bold text-risk-low">{stats.greens}</p>
+              <p className="text-xs text-muted-foreground/70">Resultado Positivo</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4">
               <p className="text-sm text-muted-foreground">Reds</p>
               <p className="text-2xl font-bold text-risk-high">{stats.reds}</p>
+              <p className="text-xs text-muted-foreground/70">Resultado Negativo</p>
             </CardContent>
           </Card>
         </div>
@@ -208,15 +210,20 @@ export default function History() {
               <CardContent className="p-8 text-center">
                 <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium mb-2">Nenhuma análise encontrada</h3>
-                <p className="text-muted-foreground mb-4">
+                <p className="text-muted-foreground mb-2">
                   {analyses.length === 0
                     ? "Você ainda não fez nenhuma análise."
                     : "Nenhuma análise corresponde aos filtros selecionados."}
                 </p>
                 {analyses.length === 0 && (
-                  <Button onClick={() => navigate("/dashboard")}>
-                    Fazer Primeira Análise
-                  </Button>
+                  <>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      Quanto mais bilhetes você analisa e registra, mais precisas ficam suas estatísticas.
+                    </p>
+                    <Button onClick={() => navigate("/dashboard")}>
+                      Fazer Primeira Análise
+                    </Button>
+                  </>
                 )}
               </CardContent>
             </Card>

@@ -320,10 +320,14 @@ export default function Dashboard() {
               >
                 <Menu className="h-5 w-5" />
               </Button>
+              {/* Reforço de posicionamento */}
               <div>
                 <h1 className="text-xl font-semibold">Dashboard</h1>
                 <p className="text-sm text-muted-foreground">
                   {profile?.daily_analyses_used || 0}/{getAnalysesLimit()} análises hoje
+                </p>
+                <p className="text-xs text-muted-foreground/70 mt-0.5">
+                  Decidir com mais consciência é melhor do que apostar por impulso.
                 </p>
               </div>
             </div>
@@ -383,13 +387,19 @@ export default function Dashboard() {
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardDescription>Greens no Mês</CardDescription>
+                <CardDescription className="flex items-center gap-1">
+                  Greens no Mês
+                  <span className="text-xs text-muted-foreground/70">(Resultado Positivo)</span>
+                </CardDescription>
                 <CardTitle className="text-3xl text-risk-low">{stats.thisMonthGreens}</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardDescription>Reds no Mês</CardDescription>
+                <CardDescription className="flex items-center gap-1">
+                  Reds no Mês
+                  <span className="text-xs text-muted-foreground/70">(Resultado Negativo)</span>
+                </CardDescription>
                 <CardTitle className="text-3xl text-risk-high">{stats.thisMonthReds}</CardTitle>
               </CardHeader>
             </Card>
@@ -416,8 +426,11 @@ export default function Dashboard() {
               {recentAnalyses.length === 0 ? (
                 <div className="text-center py-8">
                   <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground mb-2">
                     Você ainda não fez nenhuma análise.
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Quanto mais bilhetes você analisa e registra, mais precisas ficam suas estatísticas.
                   </p>
                 </div>
               ) : (

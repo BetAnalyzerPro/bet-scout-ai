@@ -53,6 +53,11 @@ const features = [
   },
 ];
 
+// Plan descriptions with updated Basic copy
+const planDescriptions: Record<string, string> = {
+  basic: "Ideal para quem quer sair do gratuito e começar a apostar com mais controle.",
+};
+
 const differentials = [
   {
     icon: Target,
@@ -116,22 +121,30 @@ export default function Landing() {
             </div>
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-              O Bet Analizer{" "}
+              O Bet Analyzer{" "}
               <span className="text-gradient">não promete ganhos</span>.{" "}
               <br className="hidden md:block" />
               Ele ajuda você a errar menos.
             </h1>
+
+            {/* Bloco emocional */}
+            <p className="text-base md:text-lg text-muted-foreground/90 max-w-xl mx-auto italic">
+              Se você já montou um bilhete confiante e perdeu por um detalhe,
+              <br className="hidden sm:block" />
+              o problema não foi azar.
+              <br />
+              Foi falta de leitura de risco.
+            </p>
             
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Análise estatística e contextual dos seus bilhetes. Identifique riscos, 
-              entenda onde sua aposta pode falhar e tome decisões mais racionais 
-              — sempre baseado em dados, nunca em promessas.
+              O Bet Analyzer analisa estatisticamente seus bilhetes, identifica riscos ocultos 
+              e mostra onde sua aposta pode falhar — sempre com base em dados reais, nunca em promessas.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="gradient-primary text-primary-foreground glow-primary">
                 <Link to="/signup">
-                  Analisar Meu Bilhete
+                  Ver Onde Meu Bilhete Pode Falhar
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -140,20 +153,9 @@ export default function Landing() {
               </Button>
             </div>
 
-            <div className="flex items-center justify-center gap-8 pt-8 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-primary" />
-                <span>Sem cartão de crédito</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-primary" />
-                <span>1 análise grátis/dia</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-primary" />
-                <span>Dados, não promessas</span>
-              </div>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Criado para apostadores que preferem dados e consciência a promessas.
+            </p>
           </div>
         </div>
       </section>
@@ -264,6 +266,9 @@ export default function Landing() {
                       {plan.name}
                     </div>
                     <p className="text-xs text-muted-foreground font-medium">{plan.subtitle}</p>
+                    {planId === "basic" && (
+                      <p className="text-xs text-muted-foreground mt-1">{planDescriptions.basic}</p>
+                    )}
                     <CardDescription className="text-sm mt-2">{plan.description}</CardDescription>
                     <div className="pt-4">
                       <span className="text-3xl font-bold">{plan.price}</span>
@@ -303,6 +308,12 @@ export default function Landing() {
               <GraduationCap className="h-4 w-4" />
               Aposte com mais consciência
             </div>
+            {/* Anti-objeção */}
+            <p className="text-base text-muted-foreground">
+              O Bet Analyzer não indica apostas.
+              <br />
+              Ele analisa decisões.
+            </p>
             <h2 className="text-3xl md:text-4xl font-bold">
               Pronto para entender melhor suas apostas?
             </h2>
