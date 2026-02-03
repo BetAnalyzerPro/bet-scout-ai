@@ -1,0 +1,2 @@
+-- Add 'elite' to the subscription_plan enum
+ALTER TYPE public.subscription_plan ADD VALUE IF NOT EXISTS 'elite';

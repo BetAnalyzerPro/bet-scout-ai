@@ -409,7 +409,7 @@ export type Database = {
         | "payment_webhook"
         | "subscription_change"
         | "account_blocked"
-      subscription_plan: "free" | "intermediate" | "advanced"
+      subscription_plan: "free" | "intermediate" | "advanced" | "elite"
       subscription_status:
         | "active"
         | "canceled"
@@ -561,7 +561,7 @@ export const Constants = {
         "subscription_change",
         "account_blocked",
       ],
-      subscription_plan: ["free", "intermediate", "advanced"],
+      subscription_plan: ["free", "intermediate", "advanced", "elite"],
       subscription_status: [
         "active",
         "canceled",
