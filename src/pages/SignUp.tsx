@@ -61,7 +61,7 @@ export default function SignUp() {
       await signUp(data.email, data.password, data.fullName, data.marketingConsent);
       toast({
         title: "Conta criada com sucesso!",
-        description: "Bem-vindo ao Bet Analyzer. Faça login para começar.",
+        description: "Bem-vindo ao Bet Analizer. Faça login para começar.",
       });
       navigate("/login");
     } catch (error: any) {
