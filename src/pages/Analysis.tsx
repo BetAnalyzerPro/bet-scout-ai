@@ -79,6 +79,9 @@ interface AnalysisData {
   };
 }
 
+// UUID validation regex
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export default function Analysis() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -88,20 +91,42 @@ export default function Analysis() {
   const [expandedBets, setExpandedBets] = useState<Set<number>>(new Set([0]));
 
   useEffect(() => {
-    if (id) {
-      fetchAnalysis();
+    // Validate that id exists and is a valid UUID format
+    if (!id || !UUID_REGEX.test(id)) {
+      console.error("Invalid or missing analysis ID:", id);
+      setLoading(false);
+      return;
     }
+    fetchAnalysis();
   }, [id]);
 
   const fetchAnalysis = async () => {
+    // Double-check UUID validity before querying
+    if (!id || !UUID_REGEX.test(id)) {
+      console.error("Invalid UUID format:", id);
+      navigate("/dashboard");
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from("bet_analyses")
         .select("*")
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      
+      if (!data) {
+        toast({
+          title: "Análise não encontrada",
+          description: "Esta análise pode ter sido removida.",
+          variant: "destructive",
+        });
+        navigate("/dashboard");
+        return;
+      }
+      
       setAnalysis(data);
     } catch (error) {
       console.error("Error fetching analysis:", error);
