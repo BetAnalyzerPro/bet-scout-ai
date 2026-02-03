@@ -167,12 +167,14 @@ function findTeamStats(data: any, teamName: string): any {
   return null;
 }
 
-// Fetch learning feedback to improve analysis
-async function fetchLearningContext(supabase: any): Promise<string> {
+// Fetch learning feedback to improve analysis - ONLY for the authenticated user
+async function fetchLearningContext(supabase: any, userId: string): Promise<string> {
   try {
+    // SECURITY: Always filter by user_id to prevent cross-user data exposure
     const { data: feedbacks, error } = await supabase
       .from("learning_feedback")
       .select("result, extracted_data, match_info, notes")
+      .eq("user_id", userId) // Only fetch current user's feedback
       .order("created_at", { ascending: false })
       .limit(100);
 
@@ -184,7 +186,7 @@ async function fetchLearningContext(supabase: any): Promise<string> {
     const redCount = feedbacks.filter((f: any) => f.result === "red").length;
     
     return `
-## DADOS DE APRENDIZADO (baseado em ${feedbacks.length} apostas anteriores)
+## DADOS DE APRENDIZADO (baseado em ${feedbacks.length} apostas anteriores suas)
 - Taxa de acerto histórica: ${((greenCount / feedbacks.length) * 100).toFixed(1)}%
 - Greens: ${greenCount} | Reds: ${redCount}
 
@@ -401,8 +403,8 @@ Deno.serve(async (req) => {
         .eq("id", analysisId);
     }
 
-    // Fetch learning context in parallel
-    const learningContextPromise = fetchLearningContext(supabase);
+    // Fetch learning context in parallel - ONLY for the authenticated user
+    const learningContextPromise = fetchLearningContext(supabase, user.id);
 
     console.log("Starting OCR extraction with Lovable AI...");
 
