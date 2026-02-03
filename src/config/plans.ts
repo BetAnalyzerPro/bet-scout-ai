@@ -1,9 +1,9 @@
 import { Zap, Shield, TrendingUp, Crown } from "lucide-react";
 
-// Database enum values (cannot be changed)
-export type DatabasePlan = "free" | "intermediate" | "advanced";
+// Database enum values
+export type DatabasePlan = "free" | "intermediate" | "advanced" | "elite";
 
-// Extended plan types for UI (includes elite as future expansion)
+// Extended plan types for UI
 export type PlanType = "free" | "basic" | "pro" | "elite";
 
 // Map database values to UI plan types
@@ -11,6 +11,7 @@ export const dbPlanToUiPlan: Record<DatabasePlan, PlanType> = {
   free: "free",
   intermediate: "basic",
   advanced: "pro",
+  elite: "elite",
 };
 
 // Plan configuration
@@ -119,7 +120,7 @@ export const PLANS: Record<PlanType, PlanConfig> = {
   },
   elite: {
     id: "elite",
-    dbValue: null, // Not yet in database
+    dbValue: "elite",
     name: "Elite",
     subtitle: "Controle Total",
     icon: Crown,
