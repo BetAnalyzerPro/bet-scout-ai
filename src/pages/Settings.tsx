@@ -117,56 +117,57 @@ export default function Settings() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border/50">
-        <div className="flex items-center gap-4 p-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+        <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")} className="h-10 w-10">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-xl font-semibold">Configurações</h1>
-            <p className="text-sm text-muted-foreground">Gerencie sua conta e preferências</p>
+            <h1 className="text-base sm:text-xl font-semibold">Configurações</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Gerencie sua conta e preferências</p>
           </div>
         </div>
       </header>
 
-      <main className="p-4 md:p-6 max-w-2xl mx-auto space-y-6">
+      <main className="p-3 sm:p-4 md:p-6 max-w-2xl mx-auto space-y-4 sm:space-y-6">
         {/* Profile Section */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <User className="h-5 w-5" />
+          <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+              <User className="h-4 w-4 sm:h-5 sm:w-5" />
               Perfil
             </CardTitle>
-            <CardDescription>Informações da sua conta</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Informações da sua conta</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-primary text-2xl font-semibold">
+          <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <span className="text-primary text-xl sm:text-2xl font-semibold">
                   {profile?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
                 </span>
               </div>
-              <div className="flex-1">
-                <p className="font-medium text-lg">{profile?.full_name || "Usuário"}</p>
-                <p className="text-muted-foreground">{user?.email}</p>
+              <div className="min-w-0">
+                <p className="font-medium text-base sm:text-lg truncate">{profile?.full_name || "Usuário"}</p>
+                <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
               </div>
             </div>
 
             <Separator />
 
-            <div className="space-y-3">
-              <Label htmlFor="fullName">Nome completo</Label>
+            <div className="space-y-2 sm:space-y-3">
+              <Label htmlFor="fullName" className="text-sm">Nome completo</Label>
               <Input
                 id="fullName"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Seu nome"
+                className="h-11 sm:h-10"
               />
             </div>
 
-            <div className="space-y-3">
-              <Label htmlFor="email">E-mail</Label>
-              <Input id="email" value={user?.email || ""} disabled className="bg-muted" />
-              <p className="text-xs text-muted-foreground">
+            <div className="space-y-2 sm:space-y-3">
+              <Label htmlFor="email" className="text-sm">E-mail</Label>
+              <Input id="email" value={user?.email || ""} disabled className="bg-muted h-11 sm:h-10" />
+              <p className="text-[10px] sm:text-xs text-muted-foreground">
                 O e-mail não pode ser alterado
               </p>
             </div>
@@ -175,39 +176,39 @@ export default function Settings() {
 
         {/* Plan Section */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <CreditCard className="h-5 w-5" />
+          <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+              <CreditCard className="h-4 w-4 sm:h-5 sm:w-5" />
               Plano Atual
             </CardTitle>
-            <CardDescription>Gerencie sua assinatura</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Gerencie sua assinatura</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center">
-                  <CreditCard className="h-6 w-6 text-primary-foreground" />
+          <CardContent className="p-4 sm:p-6 pt-0">
+            <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/50 gap-3">
+              <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl gradient-primary flex items-center justify-center flex-shrink-0">
+                  <CreditCard className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold">{getPlanDisplayName()}</p>
+                    <p className="font-semibold text-sm sm:text-base">{getPlanDisplayName()}</p>
                     <PlanBadge plan={profile?.current_plan || "free"} size="sm" />
                   </div>
-                  <p className="text-sm text-muted-foreground">{getPlanPrice()}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{getPlanPrice()}</p>
                 </div>
               </div>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="h-9 w-9 p-0 flex-shrink-0">
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
 
             {checkIsFreePlan() && (
-              <div className="mt-4 p-4 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
-                <p className="font-medium mb-1">{PAYWALL_MESSAGES.upgradeTitle}</p>
-                <p className="text-sm text-muted-foreground mb-3">
+              <div className="mt-4 p-3 sm:p-4 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
+                <p className="font-medium text-sm sm:text-base mb-1">{PAYWALL_MESSAGES.upgradeTitle}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-3">
                   {PAYWALL_MESSAGES.upgradeDescription}
                 </p>
-                <Button className="gradient-primary text-primary-foreground" size="sm">
+                <Button className="gradient-primary text-primary-foreground h-10 sm:h-9" size="sm">
                   Ver Planos
                 </Button>
               </div>
@@ -217,20 +218,20 @@ export default function Settings() {
 
         {/* Notifications Section */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Bell className="h-5 w-5" />
+          <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+              <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
               Notificações
             </CardTitle>
-            <CardDescription>Configure como você quer receber atualizações</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Configure como você quer receber atualizações</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="emailNotifications" className="font-medium">
+          <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
+            <div className="flex items-center justify-between gap-3">
+              <div className="space-y-0.5 min-w-0">
+                <Label htmlFor="emailNotifications" className="font-medium text-sm">
                   Notificações por e-mail
                 </Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Receba alertas sobre suas análises e relatórios semanais
                 </p>
               </div>
@@ -243,12 +244,12 @@ export default function Settings() {
 
             <Separator />
 
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="marketingConsent" className="font-medium">
+            <div className="flex items-center justify-between gap-3">
+              <div className="space-y-0.5 min-w-0">
+                <Label htmlFor="marketingConsent" className="font-medium text-sm">
                   Conteúdos educativos
                 </Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Receba dicas, guias e conteúdos sobre gestão de apostas
                 </p>
               </div>
@@ -263,18 +264,18 @@ export default function Settings() {
 
         {/* Appearance Section */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              {theme === "dark" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+          <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+              {theme === "dark" ? <Moon className="h-4 w-4 sm:h-5 sm:w-5" /> : <Sun className="h-4 w-4 sm:h-5 sm:w-5" />}
               Aparência
             </CardTitle>
-            <CardDescription>Personalize a interface do aplicativo</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Personalize a interface do aplicativo</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
+          <CardContent className="p-4 sm:p-6 pt-0">
+            <div className="flex items-center justify-between gap-3">
               <div className="space-y-0.5">
-                <Label className="font-medium">Tema escuro</Label>
-                <p className="text-sm text-muted-foreground">
+                <Label className="font-medium text-sm">Tema escuro</Label>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   {theme === "dark" ? "Modo escuro ativado" : "Modo claro ativado"}
                 </p>
               </div>
@@ -285,16 +286,16 @@ export default function Settings() {
 
         {/* Security Section */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Shield className="h-5 w-5" />
+          <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+              <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
               Segurança
             </CardTitle>
-            <CardDescription>Opções de segurança e privacidade</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Opções de segurança e privacidade</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full justify-between" disabled>
-              <span className="flex items-center gap-2">
+          <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
+            <Button variant="outline" className="w-full justify-between h-11 sm:h-10" disabled>
+              <span className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4" />
                 Alterar senha
               </span>
@@ -304,7 +305,7 @@ export default function Settings() {
             <Separator />
 
             <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Seus dados são protegidos e tratados de acordo com a LGPD.
               </p>
             </div>
@@ -313,7 +314,7 @@ export default function Settings() {
 
         {/* Save Button */}
         <Button
-          className="w-full gradient-primary text-primary-foreground"
+          className="w-full gradient-primary text-primary-foreground h-12 sm:h-11"
           onClick={handleSaveProfile}
           disabled={isSaving}
         >
@@ -329,17 +330,17 @@ export default function Settings() {
 
         {/* Danger Zone */}
         <Card className="border-destructive/30">
-          <CardHeader>
-            <CardTitle className="text-lg text-destructive flex items-center gap-2">
-              <Trash2 className="h-5 w-5" />
+          <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg text-destructive flex items-center gap-2">
+              <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
               Zona de Perigo
             </CardTitle>
-            <CardDescription>Ações irreversíveis</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Ações irreversíveis</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
             <Button
               variant="outline"
-              className="w-full justify-start gap-2"
+              className="w-full justify-start gap-2 h-11 sm:h-10"
               onClick={handleSignOut}
             >
               <LogOut className="h-4 w-4" />
@@ -348,22 +349,22 @@ export default function Settings() {
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive" className="w-full justify-start gap-2">
+                <Button variant="destructive" className="w-full justify-start gap-2 h-11 sm:h-10">
                   <Trash2 className="h-4 w-4" />
                   Excluir conta
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="mx-4 max-w-[calc(100%-2rem)] sm:max-w-lg">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Excluir conta permanentemente?</AlertDialogTitle>
-                  <AlertDialogDescription>
+                  <AlertDialogTitle className="text-base sm:text-lg">Excluir conta permanentemente?</AlertDialogTitle>
+                  <AlertDialogDescription className="text-sm">
                     Esta ação não pode ser desfeita. Todos os seus dados, análises e histórico serão
                     permanentemente excluídos.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+                  <AlertDialogCancel className="h-11 sm:h-10">Cancelar</AlertDialogCancel>
+                  <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90 h-11 sm:h-10">
                     Excluir conta
                   </AlertDialogAction>
                 </AlertDialogFooter>

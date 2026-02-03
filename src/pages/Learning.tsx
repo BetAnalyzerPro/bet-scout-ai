@@ -343,22 +343,22 @@ export default function Learning() {
       <main className="flex-1 flex flex-col min-h-screen">
         {/* Header */}
         <header className="sticky top-0 z-40 glass border-b border-border/50">
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between p-3 sm:p-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden"
+                className="lg:hidden h-10 w-10"
                 onClick={() => setSidebarOpen(true)}
               >
                 <Menu className="h-5 w-5" />
               </Button>
-              <div>
-                <h1 className="text-xl font-semibold">Aprendizado da IA</h1>
-                <p className="text-sm text-muted-foreground">
+              <div className="min-w-0">
+                <h1 className="text-base sm:text-xl font-semibold">Aprendizado da IA</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Envie bilhetes concluídos para melhorar as análises
                 </p>
-                <p className="text-xs text-muted-foreground/70 mt-1">
+                <p className="text-[10px] sm:text-xs text-muted-foreground/70 mt-1 hidden sm:block">
                   Esses feedbacks ajudam o sistema a entender seus padrões de decisão e melhorar as análises ao longo do tempo.
                 </p>
               </div>
@@ -368,79 +368,79 @@ export default function Learning() {
         </header>
 
         {/* Content */}
-        <div className="flex-1 p-4 md:p-6 space-y-6">
+        <div className="flex-1 p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
           {/* Stats Cards */}
-          <div className="grid sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4">
             <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Total de Feedbacks</CardDescription>
-                <CardTitle className="text-3xl">{stats.total}</CardTitle>
+              <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
+                <CardDescription className="text-xs sm:text-sm">Total</CardDescription>
+                <CardTitle className="text-xl sm:text-2xl md:text-3xl">{stats.total}</CardTitle>
               </CardHeader>
             </Card>
             <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Greens Enviados</CardDescription>
-                <CardTitle className="text-3xl text-risk-low">{stats.greens}</CardTitle>
+              <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
+                <CardDescription className="text-xs sm:text-sm">Greens</CardDescription>
+                <CardTitle className="text-xl sm:text-2xl md:text-3xl text-risk-low">{stats.greens}</CardTitle>
               </CardHeader>
             </Card>
             <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Reds Enviados</CardDescription>
-                <CardTitle className="text-3xl text-risk-high">{stats.reds}</CardTitle>
+              <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
+                <CardDescription className="text-xs sm:text-sm">Reds</CardDescription>
+                <CardTitle className="text-xl sm:text-2xl md:text-3xl text-risk-high">{stats.reds}</CardTitle>
               </CardHeader>
             </Card>
           </div>
 
           {/* Result Selection */}
           <Card>
-            <CardHeader>
-              <CardTitle>Enviar Bilhete Concluído</CardTitle>
-              <CardDescription>
+            <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
+              <CardTitle className="text-base sm:text-lg">Enviar Bilhete Concluído</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
                 Primeiro selecione o resultado e depois envie a imagem do bilhete
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
               {/* Result Buttons */}
-              <div className="flex gap-4 justify-center">
-                <div className="flex-1 max-w-48 text-center">
+              <div className="flex gap-3 sm:gap-4 justify-center">
+                <div className="flex-1 max-w-[140px] sm:max-w-48 text-center">
                   <Button
                     size="lg"
                     variant={selectedResult === "green" ? "default" : "outline"}
-                    className={`w-full h-16 gap-2 ${
+                    className={`w-full h-14 sm:h-16 gap-2 ${
                       selectedResult === "green" 
                         ? "bg-risk-low hover:bg-risk-low/90 text-white" 
                         : "border-risk-low text-risk-low hover:bg-risk-low/10"
                     }`}
                     onClick={() => setSelectedResult("green")}
                   >
-                    <CheckCircle2 className="h-6 w-6" />
+                    <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6" />
                     GREEN
                   </Button>
-                  <p className="text-xs text-muted-foreground mt-1">Resultado Positivo</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Resultado Positivo</p>
                 </div>
-                <div className="flex-1 max-w-48 text-center">
+                <div className="flex-1 max-w-[140px] sm:max-w-48 text-center">
                   <Button
                     size="lg"
                     variant={selectedResult === "red" ? "default" : "outline"}
-                    className={`w-full h-16 gap-2 ${
+                    className={`w-full h-14 sm:h-16 gap-2 ${
                       selectedResult === "red" 
                         ? "bg-risk-high hover:bg-risk-high/90 text-white" 
                         : "border-risk-high text-risk-high hover:bg-risk-high/10"
                     }`}
                     onClick={() => setSelectedResult("red")}
                   >
-                    <XCircle className="h-6 w-6" />
+                    <XCircle className="h-5 w-5 sm:h-6 sm:w-6" />
                     RED
                   </Button>
-                  <p className="text-xs text-muted-foreground mt-1">Resultado Negativo</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Resultado Negativo</p>
                 </div>
               </div>
 
               {/* Notes */}
               <div>
-                <label className="text-sm font-medium">Observações (opcional)</label>
+                <label className="text-xs sm:text-sm font-medium">Observações (opcional)</label>
                 <textarea
-                  className="w-full mt-1 p-3 rounded-lg border border-border bg-background resize-none"
+                  className="w-full mt-1 p-3 rounded-lg border border-border bg-background resize-none text-sm min-h-[60px] sm:min-h-[52px]"
                   rows={2}
                   placeholder="Ex: O gol saiu no final do segundo tempo..."
                   value={notes}
@@ -451,7 +451,7 @@ export default function Learning() {
               {/* Upload Zone */}
               <div
                 {...getRootProps()}
-                className={`p-8 text-center cursor-pointer border-2 border-dashed rounded-lg transition-all ${
+                className={`p-6 sm:p-8 text-center cursor-pointer border-2 border-dashed rounded-lg transition-all ${
                   isDragActive ? "bg-primary/5 border-primary" : "border-border hover:border-primary/50"
                 } ${!selectedResult ? "opacity-50 cursor-not-allowed" : ""}`}
               >
@@ -460,8 +460,8 @@ export default function Learning() {
                   <LoadingSpinner size="lg" text="Enviando feedback..." />
                 ) : (
                   <>
-                    <GraduationCap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">
+                    <GraduationCap className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+                    <p className="text-sm text-muted-foreground">
                       {selectedResult 
                         ? "Arraste ou clique para enviar a imagem do bilhete"
                         : "Selecione GREEN ou RED acima primeiro"
@@ -475,17 +475,17 @@ export default function Learning() {
 
           {/* Recent Feedbacks */}
           <Card>
-            <CardHeader>
-              <CardTitle>Feedbacks Recentes</CardTitle>
-              <CardDescription>Bilhetes que você enviou para aprendizado</CardDescription>
+            <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
+              <CardTitle className="text-base sm:text-lg">Feedbacks Recentes</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Bilhetes que você enviou para aprendizado</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6 pt-0">
               {isLoading ? (
                 <LoadingSpinner text="Carregando..." />
               ) : feedbacks.length === 0 ? (
-                <div className="text-center py-8">
-                  <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground mb-2">
+                <div className="text-center py-6 sm:py-8">
+                  <Clock className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+                  <p className="text-sm text-muted-foreground mb-2">
                     Você ainda não enviou nenhum feedback.
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -493,27 +493,27 @@ export default function Learning() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-2 sm:space-y-4">
                   {feedbacks.slice(0, 10).map((feedback) => (
                     <div
                       key={feedback.id}
-                      className="flex items-center justify-between p-4 rounded-lg bg-muted/50"
+                      className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/50 gap-2"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
+                      <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                        <div className={`h-9 w-9 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                           feedback.result === "green" ? "bg-risk-low/20" : "bg-risk-high/20"
                         }`}>
                           {feedback.result === "green" ? (
-                            <CheckCircle2 className="h-5 w-5 text-risk-low" />
+                            <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-risk-low" />
                           ) : (
-                            <XCircle className="h-5 w-5 text-risk-high" />
+                            <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-risk-high" />
                           )}
                         </div>
-                        <div>
-                          <p className="font-medium">
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm sm:text-base">
                             {feedback.result === "green" ? "GREEN ✓" : "RED ✗"}
                           </p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs sm:text-sm text-muted-foreground">
                             {new Date(feedback.created_at).toLocaleDateString("pt-BR", {
                               day: "2-digit",
                               month: "short",
@@ -522,7 +522,7 @@ export default function Learning() {
                             })}
                           </p>
                           {feedback.notes && (
-                            <p className="text-sm text-muted-foreground mt-1">
+                            <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">
                               {feedback.notes}
                             </p>
                           )}
@@ -531,7 +531,7 @@ export default function Learning() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-muted-foreground hover:text-destructive"
+                        className="text-muted-foreground hover:text-destructive h-10 w-10 flex-shrink-0"
                         onClick={() => deleteMutation.mutate(feedback.id)}
                       >
                         <Trash2 className="h-4 w-4" />
