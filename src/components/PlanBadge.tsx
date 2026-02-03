@@ -1,50 +1,13 @@
 import { cn } from "@/lib/utils";
-import { Zap, Shield, TrendingUp } from "lucide-react";
-
-type Plan = "start" | "control" | "pro_analysis" | "free" | "intermediate" | "advanced";
+import { getPlanFromDbValue, type DatabasePlan } from "@/config/plans";
 
 interface PlanBadgeProps {
-  plan: Plan;
+  plan: DatabasePlan | string;
   size?: "sm" | "md" | "lg";
 }
 
-const planConfig = {
-  // New plan names
-  start: {
-    label: "Start",
-    icon: Zap,
-    className: "bg-success/10 text-success border-success/30",
-  },
-  control: {
-    label: "Control",
-    icon: Shield,
-    className: "bg-info/10 text-info border-info/30",
-  },
-  pro_analysis: {
-    label: "Pro Analysis",
-    icon: TrendingUp,
-    className: "bg-primary/10 text-primary border-primary/30",
-  },
-  // Legacy plan names (for backwards compatibility)
-  free: {
-    label: "Start",
-    icon: Zap,
-    className: "bg-success/10 text-success border-success/30",
-  },
-  intermediate: {
-    label: "Control",
-    icon: Shield,
-    className: "bg-info/10 text-info border-info/30",
-  },
-  advanced: {
-    label: "Pro Analysis",
-    icon: TrendingUp,
-    className: "bg-primary/10 text-primary border-primary/30",
-  },
-};
-
 export function PlanBadge({ plan, size = "md" }: PlanBadgeProps) {
-  const config = planConfig[plan] || planConfig.start;
+  const config = getPlanFromDbValue(plan as DatabasePlan);
   const Icon = config.icon;
 
   const sizeClasses = {
@@ -63,12 +26,14 @@ export function PlanBadge({ plan, size = "md" }: PlanBadgeProps) {
     <span
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border font-medium",
-        config.className,
+        config.bgClass,
+        config.colorClass,
+        config.borderClass,
         sizeClasses[size]
       )}
     >
       <Icon className={iconSizes[size]} />
-      <span>{config.label}</span>
+      <span>{config.name}</span>
     </span>
   );
 }
