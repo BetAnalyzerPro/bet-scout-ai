@@ -358,6 +358,9 @@ export default function Learning() {
                 <p className="text-sm text-muted-foreground">
                   Envie bilhetes concluídos para melhorar as análises
                 </p>
+                <p className="text-xs text-muted-foreground/70 mt-1">
+                  Esses feedbacks ajudam o sistema a entender seus padrões de decisão e melhorar as análises ao longo do tempo.
+                </p>
               </div>
             </div>
             <ThemeToggle />
@@ -399,32 +402,38 @@ export default function Learning() {
             <CardContent className="space-y-4">
               {/* Result Buttons */}
               <div className="flex gap-4 justify-center">
-                <Button
-                  size="lg"
-                  variant={selectedResult === "green" ? "default" : "outline"}
-                  className={`flex-1 max-w-48 h-16 gap-2 ${
-                    selectedResult === "green" 
-                      ? "bg-risk-low hover:bg-risk-low/90 text-white" 
-                      : "border-risk-low text-risk-low hover:bg-risk-low/10"
-                  }`}
-                  onClick={() => setSelectedResult("green")}
-                >
-                  <CheckCircle2 className="h-6 w-6" />
-                  GREEN
-                </Button>
-                <Button
-                  size="lg"
-                  variant={selectedResult === "red" ? "default" : "outline"}
-                  className={`flex-1 max-w-48 h-16 gap-2 ${
-                    selectedResult === "red" 
-                      ? "bg-risk-high hover:bg-risk-high/90 text-white" 
-                      : "border-risk-high text-risk-high hover:bg-risk-high/10"
-                  }`}
-                  onClick={() => setSelectedResult("red")}
-                >
-                  <XCircle className="h-6 w-6" />
-                  RED
-                </Button>
+                <div className="flex-1 max-w-48 text-center">
+                  <Button
+                    size="lg"
+                    variant={selectedResult === "green" ? "default" : "outline"}
+                    className={`w-full h-16 gap-2 ${
+                      selectedResult === "green" 
+                        ? "bg-risk-low hover:bg-risk-low/90 text-white" 
+                        : "border-risk-low text-risk-low hover:bg-risk-low/10"
+                    }`}
+                    onClick={() => setSelectedResult("green")}
+                  >
+                    <CheckCircle2 className="h-6 w-6" />
+                    GREEN
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-1">Resultado Positivo</p>
+                </div>
+                <div className="flex-1 max-w-48 text-center">
+                  <Button
+                    size="lg"
+                    variant={selectedResult === "red" ? "default" : "outline"}
+                    className={`w-full h-16 gap-2 ${
+                      selectedResult === "red" 
+                        ? "bg-risk-high hover:bg-risk-high/90 text-white" 
+                        : "border-risk-high text-risk-high hover:bg-risk-high/10"
+                    }`}
+                    onClick={() => setSelectedResult("red")}
+                  >
+                    <XCircle className="h-6 w-6" />
+                    RED
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-1">Resultado Negativo</p>
+                </div>
               </div>
 
               {/* Notes */}
@@ -476,8 +485,11 @@ export default function Learning() {
               ) : feedbacks.length === 0 ? (
                 <div className="text-center py-8">
                   <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground mb-2">
                     Você ainda não enviou nenhum feedback.
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Registre o resultado dos seus bilhetes para que o sistema identifique padrões de risco.
                   </p>
                 </div>
               ) : (

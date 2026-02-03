@@ -369,8 +369,8 @@ export default function Statistics() {
             <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
               <div>
                 <h3 className="font-semibold text-lg">Descubra seu perfil de apostador</h3>
-                <p className="text-muted-foreground">
-                  Com o plano Pro Analysis, você tem acesso a gráficos avançados e recomendações personalizadas.
+                <p className="text-sm text-muted-foreground">
+                  Esse recurso ajuda a tomar decisões com mais contexto. Disponível no plano PRO.
                 </p>
               </div>
               <Button className="gradient-primary text-primary-foreground whitespace-nowrap">
@@ -415,7 +415,7 @@ export default function Statistics() {
                 <div>
                   <p className="font-medium">Registre seus resultados</p>
                   <p className="text-sm text-muted-foreground">
-                    Marque suas apostas como green ou red para ver estatísticas detalhadas.
+                    Registre o resultado dos seus bilhetes para que o sistema identifique padrões de risco.
                   </p>
                 </div>
               </div>
