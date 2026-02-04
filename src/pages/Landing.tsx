@@ -121,7 +121,7 @@ export default function Landing() {
             </div>
             
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-              O Bet Analyzer{" "}
+              O Bet Analizer{" "}
               <span className="text-gradient">não promete ganhos</span>.{" "}
               <span className="block mt-1 sm:mt-0 sm:inline">Ele ajuda você a errar menos.</span>
             </h1>
@@ -133,7 +133,7 @@ export default function Landing() {
             </p>
             
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2">
-              O Bet Analyzer analisa estatisticamente seus bilhetes, identifica riscos ocultos 
+              O Bet Analizer analisa estatisticamente seus bilhetes, identifica riscos ocultos 
               e mostra onde sua aposta pode falhar — sempre com base em dados reais, nunca em promessas.
             </p>
 
@@ -306,7 +306,7 @@ export default function Landing() {
             </div>
             {/* Anti-objeção */}
             <p className="text-base sm:text-lg text-muted-foreground">
-              O Bet Analyzer não indica apostas. Ele analisa decisões.
+              O Bet Analizer não indica apostas. Ele analisa decisões.
             </p>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold px-2">
               Pronto para entender melhor suas apostas?
