@@ -8,19 +8,34 @@ interface LogoProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const Logo = forwardRef<HTMLDivElement, LogoProps>(
   ({ size = "md", showText = true, className, ...props }, ref) => {
-    const sizeClasses = {
-      header: "h-9 sm:h-12", // 36px mobile, 48px desktop
-      sm: "h-16",
-      md: "h-24",
-      lg: "h-32",
+    // Fixed pixel heights for each size
+    const sizeStyles: Record<string, React.CSSProperties> = {
+      header: {}, // Handled via inline style below for precision
+      sm: { height: 64 },
+      md: { height: 96 },
+      lg: { height: 128 },
     };
+
+    // For header size, we use responsive inline styles
+    if (size === "header") {
+      return (
+        <div ref={ref} className={`flex items-center ${className || ""}`} {...props}>
+          <img 
+            src={logoImage} 
+            alt="Bet Analizer Logo" 
+            className="w-auto h-[36px] sm:h-[48px]"
+            style={{ maxHeight: "none" }}
+          />
+        </div>
+      );
+    }
 
     return (
       <div ref={ref} className={`flex items-center ${className || ""}`} {...props}>
         <img 
           src={logoImage} 
           alt="Bet Analizer Logo" 
-          className={`${sizeClasses[size]} w-auto`}
+          style={{ ...sizeStyles[size], width: "auto", maxHeight: "none" }}
         />
       </div>
     );
