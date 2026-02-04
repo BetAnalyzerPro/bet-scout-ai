@@ -1,4 +1,4 @@
-import { Zap, Shield, TrendingUp, Crown } from "lucide-react";
+import { Brain, SlidersHorizontal, Compass, Layers } from "lucide-react";
 
 // Database enum values
 export type DatabasePlan = "free" | "intermediate" | "advanced" | "elite";
@@ -20,7 +20,7 @@ export interface PlanConfig {
   dbValue: DatabasePlan | null; // null for plans not yet in DB
   name: string;
   subtitle: string;
-  icon: typeof Zap;
+  icon: typeof Brain;
   price: string;
   priceValue: number;
   period: string;
@@ -42,7 +42,7 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     dbValue: "free",
     name: "Free",
     subtitle: "Consciência Inicial",
-    icon: Zap,
+    icon: Brain,
     price: "Gratuito",
     priceValue: 0,
     period: "",
@@ -68,7 +68,7 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     dbValue: "intermediate",
     name: "Basic",
     subtitle: "Aposta Controlada",
-    icon: Shield,
+    icon: SlidersHorizontal,
     price: "R$ 49,90",
     priceValue: 49.90,
     period: "/mês",
@@ -95,7 +95,7 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     dbValue: "advanced",
     name: "Pro",
     subtitle: "Decisão Profissional",
-    icon: TrendingUp,
+    icon: Compass,
     price: "R$ 119,90",
     priceValue: 119.90,
     period: "/mês",
@@ -123,7 +123,7 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     dbValue: "elite",
     name: "Elite",
     subtitle: "Controle Total",
-    icon: Crown,
+    icon: Layers,
     price: "R$ 249,90",
     priceValue: 249.90,
     period: "/mês",
