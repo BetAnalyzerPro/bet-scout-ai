@@ -2,13 +2,14 @@ import { forwardRef } from "react";
 import logoImage from "@/assets/logo.png";
 
 interface LogoProps extends React.HTMLAttributes<HTMLDivElement> {
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "header";
   showText?: boolean;
 }
 
 export const Logo = forwardRef<HTMLDivElement, LogoProps>(
   ({ size = "md", showText = true, className, ...props }, ref) => {
     const sizeClasses = {
+      header: "h-9 sm:h-12", // 36px mobile, 48px desktop
       sm: "h-16",
       md: "h-24",
       lg: "h-32",
