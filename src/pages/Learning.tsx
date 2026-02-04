@@ -123,8 +123,8 @@ export default function Learning() {
       if (error) throw error;
 
       toast({
-        title: "Feedback enviado! ✓",
-        description: "Obrigado por ajudar a melhorar nossas análises.",
+        title: "Resultado registrado! ✓",
+        description: "Isso ajuda o sistema a reduzir erros futuros.",
       });
 
       queryClient.invalidateQueries({ queryKey: ["learning-feedback"] });
@@ -355,10 +355,10 @@ export default function Learning() {
               <div className="min-w-0">
                 <h1 className="text-base sm:text-xl font-semibold">Aprendizado da IA</h1>
                 <p className="text-xs sm:text-sm text-muted-foreground">
-                  Envie bilhetes concluídos para melhorar as análises
+                  Quanto mais resultados você registra, mais o sistema entende seus padrões e identifica riscos recorrentes.
                 </p>
                 <p className="text-[10px] sm:text-xs text-muted-foreground/70 mt-1 hidden sm:block">
-                  Esses feedbacks ajudam o sistema a entender seus padrões de decisão e melhorar as análises ao longo do tempo.
+                  O sistema já começa a identificar padrões no seu comportamento.
                 </p>
               </div>
             </div>

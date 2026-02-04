@@ -227,7 +227,7 @@ export default function Statistics() {
               <p className="text-[10px] sm:text-xs text-muted-foreground">
                 {periodStats.total > 0
                   ? `${Math.round((periodStats.greens / periodStats.total) * 100)}% das apostas`
-                  : "Sem dados"}
+                  : "Dados insuficientes para análise confiável."}
               </p>
             </CardContent>
           </Card>
@@ -244,7 +244,7 @@ export default function Statistics() {
               <p className="text-[10px] sm:text-xs text-muted-foreground">
                 {periodStats.total > 0
                   ? `${Math.round((periodStats.reds / periodStats.total) * 100)}% das apostas`
-                  : "Sem dados"}
+                  : "Dados insuficientes para análise confiável."}
               </p>
             </CardContent>
           </Card>
@@ -328,6 +328,14 @@ export default function Statistics() {
                   </div>
                 ))}
               </div>
+              {/* Risk distribution insight */}
+              <p className="text-[10px] sm:text-xs text-muted-foreground text-center mt-2">
+                {riskDistribution[1].value + riskDistribution[2].value > riskDistribution[0].value
+                  ? "A maioria das suas apostas está concentrada em risco médio ou alto."
+                  : riskDistribution[0].value + riskDistribution[1].value + riskDistribution[2].value === 0
+                  ? "Registre mais resultados para visualizar seu perfil de risco."
+                  : "Seu perfil mostra equilíbrio entre diferentes níveis de risco."}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -359,7 +367,7 @@ export default function Statistics() {
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Analise pelo menos 5 bilhetes para descobrir seu perfil.
+                  Dados insuficientes para análise confiável. Continue registrando resultados para descobrir seu perfil.
                 </p>
               )}
             </CardContent>
@@ -413,9 +421,9 @@ export default function Statistics() {
               <div className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-lg bg-muted border">
                 <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-sm sm:text-base">Registre seus resultados</p>
+                  <p className="font-medium text-sm sm:text-base">Dados insuficientes para análise confiável</p>
                   <p className="text-xs sm:text-sm text-muted-foreground">
-                    Registre o resultado dos seus bilhetes para que o sistema identifique padrões de risco.
+                    Continue registrando resultados para visualizar seu perfil de risco e receber dicas personalizadas.
                   </p>
                 </div>
               </div>
