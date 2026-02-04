@@ -23,7 +23,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Logo } from "@/components/Logo";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { RiskBadge } from "@/components/RiskBadge";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -134,7 +133,6 @@ export default function History() {
               </p>
             </div>
           </div>
-          <ThemeToggle />
         </div>
       </header>
 

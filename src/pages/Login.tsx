@@ -15,7 +15,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Logo } from "@/components/Logo";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -68,7 +67,6 @@ export default function Login() {
         <Link to="/">
           <Logo size="sm" />
         </Link>
-        <ThemeToggle />
       </header>
 
       {/* Main Content */}

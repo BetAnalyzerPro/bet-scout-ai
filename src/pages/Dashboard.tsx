@@ -18,7 +18,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Logo } from "@/components/Logo";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { PlanBadge } from "@/components/PlanBadge";
 import { RiskBadge } from "@/components/RiskBadge";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
@@ -331,7 +330,6 @@ export default function Dashboard() {
                 </p>
               </div>
             </div>
-            <ThemeToggle />
           </div>
         </header>
 
