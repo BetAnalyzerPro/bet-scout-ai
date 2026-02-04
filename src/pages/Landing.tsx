@@ -87,7 +87,7 @@ export default function Landing() {
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background border-b border-border/50">
-        <div className="container mx-auto flex items-center justify-between p-4">
+        <div className="container mx-auto flex items-center justify-between px-4 py-2">
           <Logo size="header" />
           <div className="flex items-center gap-4">
             {user ? (
