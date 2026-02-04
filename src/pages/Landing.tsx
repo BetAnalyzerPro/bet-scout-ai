@@ -303,10 +303,12 @@ export default function Landing() {
               O primeiro passo é analisar.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-              <Button asChild size="lg" className="gradient-primary text-primary-foreground glow-primary h-12 sm:h-11 text-base sm:text-lg">
+              <Button asChild size="lg" className="gradient-primary text-primary-foreground glow-primary h-auto min-h-[48px] sm:min-h-[44px] text-base sm:text-lg py-3 px-6 whitespace-normal text-center">
                 <Link to="/signup">
-                  Criar Conta Gratuita e Analisar Meu Bilhete
-                  <ArrowRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6" />
+                  <span className="flex items-center justify-center gap-2">
+                    Criar Conta e Analisar Meu Bilhete
+                    <ArrowRight className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />
+                  </span>
                 </Link>
               </Button>
             </div>
