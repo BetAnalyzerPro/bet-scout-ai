@@ -1,5 +1,5 @@
 /**
- * Security utilities for Bet Analyzer
+ * Security utilities for Bet Analizer
  * Client-side validation (always complemented by server-side validation)
  */
 
