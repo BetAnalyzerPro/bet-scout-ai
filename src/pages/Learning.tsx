@@ -367,6 +367,28 @@ export default function Learning() {
 
         {/* Content */}
         <div className="flex-1 p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+          {/* First Access Welcome Message */}
+          {feedbacks.length === 0 && (
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="p-4 sm:p-5">
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Ao registrar se um bilhete foi GREEN ou RED, o sistema aprende com suas decisões e ajuda a reduzir erros futuros.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Transversal Message for New Users */}
+          {feedbacks.length >= 1 && feedbacks.length <= 3 && (
+            <Card className="border-muted bg-muted/30">
+              <CardContent className="p-3 sm:p-4">
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Decisão consciente vale mais que sorte. Continue registrando para fortalecer as análises.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Stats Cards */}
           <div className="grid grid-cols-3 gap-3 sm:gap-4">
             <Card>
@@ -487,7 +509,7 @@ export default function Learning() {
                     Você ainda não enviou nenhum feedback.
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Registre o resultado dos seus bilhetes para que o sistema identifique padrões de risco.
+                    Menos impulso, mais contexto. Registre o resultado dos seus bilhetes para identificar padrões.
                   </p>
                 </div>
               ) : (

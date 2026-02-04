@@ -338,6 +338,18 @@ export default function Dashboard() {
 
         {/* Content */}
         <div className="flex-1 p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+          {/* Welcome Message for First-Time Users */}
+          {stats.total === 0 && (
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="p-4 sm:p-5">
+                <h3 className="font-semibold text-sm sm:text-base mb-1">Bem-vindo ao Bet Analizer.</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  O primeiro passo não é apostar — é entender os riscos do seu bilhete.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Upload Zone */}
           <Card className="border-dashed border-2 hover:border-primary/50 transition-colors">
             <div
@@ -348,7 +360,7 @@ export default function Dashboard() {
             >
               <input {...getInputProps()} />
               {isUploading ? (
-                <LoadingSpinner size="lg" text="Analisando riscos do seu bilhete..." />
+                <LoadingSpinner size="lg" text="Estamos analisando seu bilhete com base em dados e contexto, não em promessas." />
               ) : (
                 <>
                   <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl gradient-primary flex items-center justify-center mx-auto mb-4 sm:mb-6">
@@ -358,12 +370,20 @@ export default function Dashboard() {
                     {isDragActive ? "Solte a imagem aqui" : "Analise os riscos do seu bilhete"}
                   </h3>
                   <p className="text-sm text-muted-foreground mb-3 sm:mb-4 px-2">
-                    Envie uma imagem e descubra onde sua aposta pode falhar
+                    {stats.total === 0 
+                      ? "Escolha um bilhete que você está pensando em apostar ou já apostou."
+                      : "Envie uma imagem e descubra onde sua aposta pode falhar"
+                    }
                   </p>
                   <Button className="gradient-primary text-primary-foreground h-11 sm:h-10">
                     <Plus className="h-4 w-4 mr-2" />
                     Analisar Bilhete
                   </Button>
+                  {stats.total === 0 && (
+                    <p className="text-[10px] sm:text-xs text-muted-foreground/70 mt-3">
+                      Envie a imagem do seu bilhete para identificar riscos antes de apostar.
+                    </p>
+                  )}
                 </>
               )}
             </div>
@@ -517,6 +537,28 @@ export default function Dashboard() {
               )}
             </CardContent>
           </Card>
+
+          {/* Post First Analysis Feedback */}
+          {stats.total === 1 && (
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="p-3 sm:p-4">
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Este é apenas o começo. Quanto mais bilhetes você analisa, mais claros ficam seus padrões.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Free Plan Context Message */}
+          {checkIsFreePlan() && stats.total >= 1 && stats.total <= 3 && (
+            <Card className="border-muted bg-muted/30">
+              <CardContent className="p-3 sm:p-4">
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Seu plano permite análises limitadas por dia para incentivar decisões conscientes.
+                </p>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Upgrade Banner for Free Users */}
           {checkIsFreePlan() && (

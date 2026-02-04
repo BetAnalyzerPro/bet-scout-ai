@@ -417,28 +417,41 @@ export default function Statistics() {
                 </div>
               </div>
             )}
-            {periodStats.total === 0 && (
-              <div className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-lg bg-muted border">
-                <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium text-sm sm:text-base">Dados insuficientes para análise confiável</p>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    Continue registrando resultados para visualizar seu perfil de risco e receber dicas personalizadas.
-                  </p>
-                </div>
-              </div>
-            )}
-            {periodStats.winRate >= 50 && periodStats.total >= 5 && (
-              <div className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-lg bg-risk-low/10 border border-risk-low/20">
-                <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-risk-low flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium text-sm sm:text-base text-risk-low">Bom desempenho!</p>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    Continue mantendo a disciplina e seguindo as análises de risco.
-                  </p>
-                </div>
-              </div>
-            )}
+        {periodStats.total === 0 && (
+          <div className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-lg bg-muted border">
+            <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-sm sm:text-base">À medida que você registra análises...</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                ...esta área mostrará seus padrões de risco e evolução. Apostar melhor começa por entender.
+              </p>
+            </div>
+          </div>
+        )}
+        {periodStats.winRate >= 50 && periodStats.total >= 5 && (
+          <div className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-lg bg-risk-low/10 border border-risk-low/20">
+            <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-risk-low flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-sm sm:text-base text-risk-low">Bom desempenho!</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Continue mantendo a disciplina e seguindo as análises de risco.
+              </p>
+            </div>
+          </div>
+        )}
+        
+        {/* Transversal Reinforcement Messages for Early Users */}
+        {periodStats.total >= 3 && periodStats.total < 10 && (
+          <div className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-lg bg-muted/50 border border-border">
+            <Target className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-sm sm:text-base">Você está construindo seu perfil.</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                O sistema já começa a identificar padrões no seu comportamento. Continue registrando resultados.
+              </p>
+            </div>
+          </div>
+        )}
           </CardContent>
         </Card>
       </main>
