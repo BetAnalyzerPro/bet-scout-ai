@@ -176,7 +176,7 @@ export default function Dashboard() {
             onClick={() => navigate("/learning")}
           >
             <GraduationCap className="h-4 w-4" />
-            Aprendizado
+            Aprendizado da IA
           </Button>
           <Button 
             variant="ghost" 
@@ -262,7 +262,7 @@ export default function Dashboard() {
                 }}
               >
                 <GraduationCap className="h-4 w-4" />
-                Aprendizado
+                Aprendizado da IA
               </Button>
               <Button 
                 variant="ghost" 

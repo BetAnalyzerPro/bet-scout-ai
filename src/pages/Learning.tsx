@@ -201,7 +201,7 @@ export default function Learning() {
           </Button>
           <Button variant="secondary" className="w-full justify-start gap-3">
             <GraduationCap className="h-4 w-4" />
-            Aprendizado
+            Aprendizado da IA
           </Button>
           <Button 
             variant="ghost" 
@@ -284,7 +284,7 @@ export default function Learning() {
               </Button>
               <Button variant="secondary" className="w-full justify-start gap-3" onClick={() => setSidebarOpen(false)}>
                 <GraduationCap className="h-4 w-4" />
-                Aprendizado
+                Aprendizado da IA
               </Button>
               <Button 
                 variant="ghost" 
