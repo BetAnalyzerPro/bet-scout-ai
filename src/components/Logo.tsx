@@ -23,7 +23,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
           <img 
             src={logoImage} 
             alt="Bet Analizer Logo" 
-            className="w-auto h-[36px] sm:h-[48px]"
+            className="w-auto h-[56px] sm:h-[72px]"
             style={{ maxHeight: "none" }}
           />
         </div>
