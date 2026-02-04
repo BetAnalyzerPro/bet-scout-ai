@@ -16,7 +16,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Logo } from "@/components/Logo";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { PLANS, PRICING_PLANS, PAYWALL_MESSAGES } from "@/config/plans";
 
@@ -87,11 +86,10 @@ export default function Landing() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 glass border-b border-border/50">
+      <header className="sticky top-0 z-50 bg-background border-b border-border/50">
         <div className="container mx-auto flex items-center justify-between p-4">
-          <Logo size="sm" />
+          <Logo size="header" />
           <div className="flex items-center gap-4">
-            <ThemeToggle />
             {user ? (
               <Button asChild className="gradient-primary text-primary-foreground">
                 <Link to="/dashboard">Dashboard</Link>
