@@ -163,7 +163,7 @@ export default function Analysis() {
       
       toast({
         title: isGreen ? "GREEN marcado! 🎉" : "RED marcado",
-        description: "Resultado registrado no seu histórico.",
+        description: "Resultado registrado. Isso fortalece a análise dos próximos bilhetes.",
       });
     } catch (error) {
       console.error("Error updating result:", error);
@@ -323,6 +323,15 @@ export default function Analysis() {
           </CardContent>
         </Card>
 
+        {/* First Analysis Completion Feedback */}
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Análise concluída. Observe onde seu bilhete apresenta maior risco.
+            </p>
+          </CardContent>
+        </Card>
+
         {/* Mark Result */}
         <Card>
           <CardContent className="p-3 sm:p-4">
@@ -330,7 +339,7 @@ export default function Analysis() {
               <div>
                 <p className="font-medium text-sm sm:text-base">Marcar Resultado</p>
                 <p className="text-xs sm:text-sm text-muted-foreground">
-                  Registre se o bilhete deu Green ou Red
+                  Registre se o bilhete deu Green ou Red para fortalecer as próximas análises.
                 </p>
               </div>
               <div className="flex gap-2">
