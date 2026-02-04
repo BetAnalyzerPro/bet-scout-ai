@@ -23,60 +23,63 @@ const features = [
   {
     icon: Upload,
     title: "Leitura de Bilhetes",
-    description: "Envie a imagem do seu bilhete e nosso sistema extrai automaticamente jogos, mercados, linhas e odds.",
+    description: "Envie seu bilhete e descubra onde você pode estar se enganando antes de apostar.",
   },
   {
     icon: Brain,
     title: "Análise Estatística",
-    description: "Histórico recente, confrontos diretos, xG, gols, escanteios e contexto da partida para cada seleção.",
+    description: "Dados e contexto para entender quando uma aposta parece boa, mas não é.",
   },
   {
     icon: AlertTriangle,
     title: "Identificação de Riscos",
-    description: "Classificação visual clara: 🟢 Baixo, 🟡 Moderado, 🔴 Alto risco — sempre com explicação objetiva.",
+    description: "Odds altas escondem riscos altos — o app deixa isso claro.",
   },
   {
     icon: Lightbulb,
     title: "Sugestões Inteligentes",
-    description: "Linhas menos agressivas, troca de mercado e ajustes estratégicos justificados por dados históricos.",
+    description: "Pequenos ajustes evitam erros grandes e apostas desnecessárias.",
   },
   {
     icon: LineChart,
     title: "Perfil e Evolução",
-    description: "Acompanhe seu desempenho, identifique padrões e receba recomendações personalizadas ao seu perfil.",
+    description: "Acompanhe seus padrões, identifique excessos e evolua como apostador.",
   },
   {
     icon: GraduationCap,
     title: "Educação Contínua",
-    description: "Conteúdos sobre gestão de banca, controle emocional e consistência no longo prazo.",
+    description: "Conteúdo prático para reduzir impulsos e melhorar decisões ao longo do tempo.",
   },
 ];
 
-// Plan descriptions with updated Basic copy
-const planDescriptions: Record<string, string> = {
-  basic: "Ideal para quem quer sair do gratuito e começar a apostar com mais controle.",
+// Plan context phrases for each tier
+const planContextPhrases: Record<string, string> = {
+  free: "Para entender seus erros antes de continuar apostando.",
+  basic: "Para quem quer parar de apostar por impulso.",
+  pro: "Para quem busca consistência, não sorte.",
+  elite: "Para quem trata apostas como gestão de risco.",
 };
 
 const differentials = [
   {
     icon: Target,
     title: "Análise Profissional de Scouting",
-    description: "Metodologia usada por analistas esportivos aplicada às suas apostas.",
+    description: "Metodologia de analistas esportivos para decisões mais conscientes.",
   },
   {
     icon: BarChart3,
     title: "Estatística Aplicada",
-    description: "Dados históricos e métricas avançadas para embasar cada decisão.",
+    description: "Dados e métricas que mostram riscos antes que você aposte.",
   },
   {
     icon: BookOpen,
     title: "Educação Contínua",
-    description: "Aprenda a apostar melhor com conteúdos práticos e objetivos.",
+    description: "Conteúdo para apostar menos e melhor — ou não apostar.",
   },
   {
     icon: Shield,
     title: "Comunicação Preventiva",
-    description: "Alertas e recomendações focadas em proteção e disciplina.",
+    description: "Alertas focados em proteção, não em incentivo a apostar mais.",
   },
 ];
 
@@ -119,26 +122,19 @@ export default function Landing() {
             </div>
             
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-              O Bet Analizer{" "}
-              <span className="text-gradient">não promete ganhos</span>.{" "}
-              <span className="block mt-1 sm:mt-0 sm:inline">Ele ajuda você a errar menos.</span>
+              Você não está perdendo porque{" "}
+              <span className="text-gradient">não entende futebol</span>.{" "}
+              <span className="block mt-1 sm:mt-0 sm:inline">Está perdendo porque aposta sem contexto.</span>
             </h1>
-
-            {/* Bloco emocional */}
-            <p className="text-base sm:text-lg md:text-xl text-muted-foreground/90 max-w-xl mx-auto italic leading-relaxed px-2">
-              Se você já montou um bilhete confiante e perdeu por um detalhe,
-              o problema não foi azar. Foi falta de leitura de risco.
-            </p>
             
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2">
-              O Bet Analizer analisa estatisticamente seus bilhetes, identifica riscos ocultos 
-              e mostra onde sua aposta pode falhar — sempre com base em dados reais, nunca em promessas.
+              O Bet Analizer não promete ganhos. Ele mostra onde seu bilhete pode falhar — antes de você apostar.
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center px-2">
               <Button asChild size="lg" className="gradient-primary text-primary-foreground glow-primary h-12 sm:h-11 text-base sm:text-lg">
                 <Link to="/signup">
-                  Ver Onde Meu Bilhete Pode Falhar
+                  Analisar Meu Bilhete Agora
                   <ArrowRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6" />
                 </Link>
               </Button>
@@ -208,8 +204,8 @@ export default function Landing() {
               O que torna o Bet Analizer diferente
             </h2>
             <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2">
-              Não somos tipsters. Somos uma ferramenta de análise e educação 
-              para apostadores que buscam consistência.
+              O Bet Analizer não existe para fazer você apostar mais.
+              Existe para fazer você apostar melhor — ou não apostar.
             </p>
           </div>
 
@@ -260,9 +256,7 @@ export default function Landing() {
                       {plan.name}
                     </div>
                     <p className="text-xs sm:text-sm text-muted-foreground font-medium">{plan.subtitle}</p>
-                    {planId === "basic" && (
-                      <p className="text-xs sm:text-sm text-muted-foreground mt-1">{planDescriptions.basic}</p>
-                    )}
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1 italic">{planContextPhrases[planId]}</p>
                     <CardDescription className="text-sm sm:text-base mt-2">{plan.description}</CardDescription>
                     <div className="pt-3">
                       <span className="text-3xl sm:text-4xl font-bold">{plan.price}</span>
@@ -302,21 +296,16 @@ export default function Landing() {
               <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5" />
               Aposte com mais consciência
             </div>
-            {/* Anti-objeção */}
-            <p className="text-base sm:text-lg text-muted-foreground">
-              O Bet Analizer não indica apostas. Ele analisa decisões.
-            </p>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold px-2">
-              Pronto para entender melhor suas apostas?
+              Apostar sem entender é o caminho mais rápido para perder.
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed px-2">
-              O primeiro passo para apostar melhor é entender os riscos. 
-              Comece hoje com uma análise gratuita e veja onde seu bilhete pode falhar.
+              O primeiro passo é analisar.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
               <Button asChild size="lg" className="gradient-primary text-primary-foreground glow-primary h-12 sm:h-11 text-base sm:text-lg">
                 <Link to="/signup">
-                  Criar Conta Grátis
+                  Criar Conta Gratuita e Analisar Meu Bilhete
                   <ArrowRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6" />
                 </Link>
               </Button>
