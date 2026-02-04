@@ -323,7 +323,10 @@ export default function Dashboard() {
               <div className="min-w-0">
                 <h1 className="text-lg sm:text-xl font-semibold">Dashboard</h1>
                 <p className="text-xs sm:text-sm text-muted-foreground">
-                  {profile?.daily_analyses_used || 0}/{getAnalysesLimit()} análises hoje
+                  {getDailyLimit(profile?.current_plan || 'free') - (profile?.daily_analyses_used || 0) > 0 
+                    ? `Você ainda pode analisar mais ${getDailyLimit(profile?.current_plan || 'free') - (profile?.daily_analyses_used || 0)} bilhetes hoje.`
+                    : "Limite diário atingido. Volte amanhã ou faça upgrade."
+                  }
                 </p>
                 <p className="text-[10px] sm:text-xs text-muted-foreground/70 mt-0.5 hidden sm:block">
                   Decidir com mais consciência é melhor do que apostar por impulso.
@@ -402,6 +405,37 @@ export default function Dashboard() {
               </CardHeader>
             </Card>
           </div>
+
+          {/* Contextual Microfeedback */}
+          {stats.total < 5 && (
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="p-3 sm:p-4">
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Você ainda não tem dados suficientes para análises confiáveis. Continue analisando seus bilhetes para construir seu perfil.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+          
+          {stats.total >= 5 && stats.winRate < 40 && (
+            <Card className="border-risk-medium/20 bg-risk-medium/5">
+              <CardContent className="p-3 sm:p-4">
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Seu padrão atual indica maior exposição ao risco. Considere revisar suas escolhas com mais atenção.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+          
+          {stats.total >= 10 && (
+            <Card className="border-primary/10 bg-muted/30">
+              <CardContent className="p-3 sm:p-4">
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Você está construindo seu perfil de apostador. Seus dados estão ficando mais consistentes.
+                </p>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Recent Analyses */}
           <Card>

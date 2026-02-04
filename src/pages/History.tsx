@@ -137,6 +137,25 @@ export default function History() {
       </header>
 
       <main className="max-w-5xl mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+        {/* Weekly Risk Summary */}
+        {analyses.length >= 3 && (
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="p-3 sm:p-4">
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                {(() => {
+                  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+                  const recentAnalyses = analyses.filter(a => new Date(a.created_at) >= sevenDaysAgo);
+                  const highRiskCount = recentAnalyses.filter(a => a.overall_risk === 'high').length;
+                  const percentage = recentAnalyses.length > 0 ? Math.round((highRiskCount / recentAnalyses.length) * 100) : 0;
+                  return percentage > 0 
+                    ? `Nos últimos 7 dias, ${percentage}% dos seus bilhetes foram classificados como alto risco.`
+                    : "Você está mantendo um bom controle de risco nos últimos 7 dias.";
+                })()}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+        
         {/* Stats Summary */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <Card>
@@ -178,9 +197,9 @@ export default function History() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todos os riscos</SelectItem>
-                    <SelectItem value="low">Risco Baixo</SelectItem>
-                    <SelectItem value="medium">Risco Médio</SelectItem>
-                    <SelectItem value="high">Risco Alto</SelectItem>
+                    <SelectItem value="low">Menos arriscados</SelectItem>
+                    <SelectItem value="medium">Risco moderado</SelectItem>
+                    <SelectItem value="high">Mais arriscados</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
