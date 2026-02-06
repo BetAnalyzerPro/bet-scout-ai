@@ -2,17 +2,20 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-// Allowed origins for CORS - restrict to known app domains
-const ALLOWED_ORIGINS = [
-  'https://bet-analizer.lovable.app',
-  'https://id-preview--1276217c-d812-4009-acc0-0ce5863e12a4.lovable.app',
-  'http://localhost:5173',
-  'http://localhost:8080',
-];
+// Helper function to check if origin is allowed
+function isAllowedOrigin(origin: string): boolean {
+  const allowedPatterns = [
+    /^https:\/\/.*\.lovable\.app$/,
+    /^https:\/\/.*\.lovableproject\.com$/,
+    /^https:\/\/betanalizer\.lovable\.app$/,
+    /^http:\/\/localhost:\d+$/,
+  ];
+  return allowedPatterns.some(pattern => pattern.test(origin));
+}
 
 function getCorsHeaders(req: Request) {
   const origin = req.headers.get('origin') || '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  const allowedOrigin = isAllowedOrigin(origin) ? origin : 'https://betanalizer.lovable.app';
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
