@@ -29,7 +29,9 @@ const riskConfig = {
 
 export const RiskBadge = forwardRef<HTMLSpanElement, RiskBadgeProps>(
   ({ level, size = "md", showLabel = true, className, ...props }, ref) => {
-    const config = riskConfig[level];
+    // Fallback to 'medium' if level is undefined or invalid
+    const safeLevel = level && riskConfig[level] ? level : "medium";
+    const config = riskConfig[safeLevel];
 
     const sizeClasses = {
       sm: "text-xs px-2 py-0.5",
