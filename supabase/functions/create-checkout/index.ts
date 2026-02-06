@@ -101,11 +101,12 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://bet-analizer.lovable.app";
 
-    // Create checkout session
+    // Create checkout session with Brazilian Portuguese locale
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
+      locale: "pt-BR",
       success_url: `${origin}/dashboard?checkout=success`,
       cancel_url: `${origin}/?checkout=cancel#planos`,
       allow_promotion_codes: true,

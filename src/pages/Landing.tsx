@@ -12,7 +12,8 @@ import {
   LineChart,
   Lightbulb,
   GraduationCap,
-  Loader2
+  Loader2,
+  Lock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -285,33 +286,47 @@ export default function Landing() {
                         </li>
                       ))}
                     </ul>
-                    {planId === "free" ? (
-                      <Button 
-                        asChild 
-                        className={`w-full h-11 sm:h-10 text-base ${plan.isPopular ? 'gradient-primary text-primary-foreground' : ''}`}
-                        variant={plan.isPopular ? "default" : "outline"}
-                        size="sm"
-                      >
-                        <Link to="/signup">{plan.cta}</Link>
-                      </Button>
-                    ) : (
-                      <Button 
-                        className={`w-full h-11 sm:h-10 text-base ${plan.isPopular ? 'gradient-primary text-primary-foreground' : ''}`}
-                        variant={plan.isPopular ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handlePlanClick(planId)}
-                        disabled={isLoading && loadingPlan === planId}
-                      >
-                        {isLoading && loadingPlan === planId ? (
-                          <>
-                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            Processando...
-                          </>
-                        ) : (
-                          plan.cta
-                        )}
-                      </Button>
-                    )}
+                    <div className="space-y-2">
+                      {planId === "free" ? (
+                        <Button 
+                          asChild 
+                          className={`w-full h-11 sm:h-10 text-base ${plan.isPopular ? 'gradient-primary text-primary-foreground' : ''}`}
+                          variant={plan.isPopular ? "default" : "outline"}
+                          size="sm"
+                        >
+                          <Link to="/signup">{plan.cta}</Link>
+                        </Button>
+                      ) : (
+                        <Button 
+                          className={`w-full h-11 sm:h-10 text-base ${plan.isPopular ? 'gradient-primary text-primary-foreground' : ''}`}
+                          variant={plan.isPopular ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handlePlanClick(planId)}
+                          disabled={isLoading && loadingPlan === planId}
+                        >
+                          {isLoading && loadingPlan === planId ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              Processando...
+                            </>
+                          ) : (
+                            plan.cta
+                          )}
+                        </Button>
+                      )}
+                      {/* Microcopy for paid plans */}
+                      {planId !== "free" && (
+                        <div className="text-center space-y-0.5">
+                          <p className="text-[10px] sm:text-xs text-muted-foreground flex items-center justify-center gap-1">
+                            <Lock className="h-3 w-3" />
+                            Pagamento seguro via Stripe
+                          </p>
+                          <p className="text-[10px] sm:text-xs text-muted-foreground">
+                            Cancele quando quiser
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               );
