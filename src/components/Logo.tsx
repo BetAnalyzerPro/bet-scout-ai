@@ -8,12 +8,12 @@ interface LogoProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const Logo = forwardRef<HTMLDivElement, LogoProps>(
   ({ size = "md", showText = true, className, ...props }, ref) => {
-    // Fixed pixel heights for each size
+    // Fixed pixel heights for each size - maximized
     const sizeStyles: Record<string, React.CSSProperties> = {
       header: {}, // Handled via inline style below for precision
-      sm: { height: 64 },
-      md: { height: 96 },
-      lg: { height: 128 },
+      sm: { height: 80 },
+      md: { height: 120 },
+      lg: { height: 160 },
     };
 
     // For header size, we use responsive inline styles
