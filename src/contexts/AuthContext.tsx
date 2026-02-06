@@ -7,11 +7,15 @@ interface Profile {
   user_id: string;
   full_name: string | null;
   avatar_url: string | null;
-  current_plan: "free" | "intermediate" | "advanced";
+  current_plan: "free" | "intermediate" | "advanced" | "elite";
   daily_analyses_used: number;
   last_analysis_reset: string;
   marketing_consent: boolean;
   email_notifications: boolean;
+  stripe_customer_id?: string | null;
+  stripe_subscription_id?: string | null;
+  plan_status?: string | null;
+  plan_expires_at?: string | null;
 }
 
 interface AuthContextType {

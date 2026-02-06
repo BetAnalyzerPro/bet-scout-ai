@@ -184,6 +184,9 @@ export type Database = {
           marketing_consent: boolean
           payment_provider: string | null
           plan_expires_at: string | null
+          plan_status: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
           subscription_id: string | null
           updated_at: string
           user_id: string
@@ -200,6 +203,9 @@ export type Database = {
           marketing_consent?: boolean
           payment_provider?: string | null
           plan_expires_at?: string | null
+          plan_status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           subscription_id?: string | null
           updated_at?: string
           user_id: string
@@ -216,6 +222,9 @@ export type Database = {
           marketing_consent?: boolean
           payment_provider?: string | null
           plan_expires_at?: string | null
+          plan_status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           subscription_id?: string | null
           updated_at?: string
           user_id?: string
@@ -295,8 +304,10 @@ export type Database = {
           id: string
           metadata: Json | null
           plan_id: string | null
+          plan_key: string | null
           processed_at: string | null
           provider: string
+          raw_event: Json | null
           status: Database["public"]["Enums"]["subscription_status"]
           user_id: string | null
         }
@@ -309,8 +320,10 @@ export type Database = {
           id?: string
           metadata?: Json | null
           plan_id?: string | null
+          plan_key?: string | null
           processed_at?: string | null
           provider: string
+          raw_event?: Json | null
           status: Database["public"]["Enums"]["subscription_status"]
           user_id?: string | null
         }
@@ -323,8 +336,10 @@ export type Database = {
           id?: string
           metadata?: Json | null
           plan_id?: string | null
+          plan_key?: string | null
           processed_at?: string | null
           provider?: string
+          raw_event?: Json | null
           status?: Database["public"]["Enums"]["subscription_status"]
           user_id?: string | null
         }
@@ -353,6 +368,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_expired_subscriptions: { Args: never; Returns: undefined }
       check_rate_limit: {
         Args: {
           p_action: string
@@ -363,6 +379,7 @@ export type Database = {
         Returns: boolean
       }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      get_plan_daily_limit: { Args: { p_plan: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -13,6 +13,8 @@ import {
   LogOut,
   Trash2,
   Check,
+  ExternalLink,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +28,7 @@ import { PlanBadge } from "@/components/PlanBadge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { getPlanFromDbValue, isFreePlan, PAYWALL_MESSAGES } from "@/config/plans";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,6 +46,7 @@ export default function Settings() {
   const { user, profile, signOut, refreshProfile } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
+  const { isLoading: isPortalLoading, handleCustomerPortal } = useStripeCheckout();
 
   const [fullName, setFullName] = useState(profile?.full_name || "");
   const [emailNotifications, setEmailNotifications] = useState(profile?.email_notifications ?? true);
@@ -183,7 +187,7 @@ export default function Settings() {
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm">Gerencie sua assinatura</CardDescription>
           </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
+          <CardContent className="p-4 sm:p-6 pt-0 space-y-4">
             <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/50 gap-3">
               <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                 <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl gradient-primary flex items-center justify-center flex-shrink-0">
@@ -195,21 +199,66 @@ export default function Settings() {
                     <PlanBadge plan={profile?.current_plan || "free"} size="sm" />
                   </div>
                   <p className="text-xs sm:text-sm text-muted-foreground">{getPlanPrice()}</p>
+                  {profile?.plan_status && profile.plan_status !== "active" && (
+                    <p className="text-xs text-warning mt-1">
+                      Status: {profile.plan_status === "past_due" ? "Pagamento pendente" : 
+                              profile.plan_status === "canceled" ? "Cancelado" : profile.plan_status}
+                    </p>
+                  )}
                 </div>
               </div>
-              <Button variant="outline" size="sm" className="h-9 w-9 p-0 flex-shrink-0">
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              {!checkIsFreePlan() && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-9 px-3 flex-shrink-0"
+                  onClick={handleCustomerPortal}
+                  disabled={isPortalLoading}
+                >
+                  {isPortalLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <ExternalLink className="h-4 w-4 mr-1" />
+                      <span className="hidden sm:inline">Gerenciar</span>
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
 
+            {/* Manage subscription button for paid users */}
+            {!checkIsFreePlan() && (
+              <Button 
+                variant="outline" 
+                className="w-full justify-between h-11 sm:h-10"
+                onClick={handleCustomerPortal}
+                disabled={isPortalLoading}
+              >
+                <span className="flex items-center gap-2 text-sm">
+                  <CreditCard className="h-4 w-4" />
+                  Gerenciar assinatura
+                </span>
+                {isPortalLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ExternalLink className="h-4 w-4" />
+                )}
+              </Button>
+            )}
+
             {checkIsFreePlan() && (
-              <div className="mt-4 p-3 sm:p-4 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
+              <div className="p-3 sm:p-4 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
                 <p className="font-medium text-sm sm:text-base mb-1">{PAYWALL_MESSAGES.upgradeTitle}</p>
                 <p className="text-xs sm:text-sm text-muted-foreground mb-3">
                   {PAYWALL_MESSAGES.upgradeDescription}
                 </p>
-                <Button className="gradient-primary text-primary-foreground h-10 sm:h-9" size="sm">
-                  Ver Planos
+                <Button 
+                  className="gradient-primary text-primary-foreground h-10 sm:h-9" 
+                  size="sm"
+                  asChild
+                >
+                  <a href="/#planos">Ver Planos</a>
                 </Button>
               </div>
             )}
