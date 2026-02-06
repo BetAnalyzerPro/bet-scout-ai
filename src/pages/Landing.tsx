@@ -124,17 +124,17 @@ export default function Landing() {
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
               Você não está perdendo porque{" "}
               <span className="text-gradient">não entende futebol</span>.{" "}
-              <span className="block mt-1 sm:mt-0 sm:inline">Está perdendo porque aposta sem contexto.</span>
+              <span className="block mt-1 sm:mt-0 sm:inline">Está perdendo porque aposta sem contexto — e isso custa dinheiro.</span>
             </h1>
             
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2">
-              O Bet Analizer não promete ganhos. Ele mostra onde seu bilhete pode falhar — antes de você apostar.
+              O Bet Analizer não promete ganhos. Ele mostra onde você está se expondo ao risco antes de apostar.
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center px-2">
               <Button asChild size="lg" className="gradient-primary text-primary-foreground glow-primary h-12 sm:h-11 text-base sm:text-lg">
                 <Link to="/signup">
-                  Analisar Meu Bilhete Agora
+                  Analisar meu bilhete agora
                   <ArrowRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6" />
                 </Link>
               </Button>
@@ -144,7 +144,7 @@ export default function Landing() {
             </div>
 
             <p className="text-sm sm:text-base text-muted-foreground px-4">
-              Criado para apostadores que preferem dados e consciência a promessas.
+              Criado para apostadores que preferem dados, consciência e gestão de risco — não promessas.
             </p>
           </div>
         </div>
