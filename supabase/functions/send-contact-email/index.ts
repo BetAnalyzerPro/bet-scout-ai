@@ -48,7 +48,7 @@ const handler = async (req: Request): Promise<Response> => {
     const destinationEmail = Deno.env.get("CONTACT_EMAIL") || "contato@betanalizer.com";
 
     const emailResponse = await resend.emails.send({
-      from: "Bet Analizer <noreply@betanalizer.com>",
+      from: "Bet Analizer <onboarding@resend.dev>",
       to: [destinationEmail],
       replyTo: email,
       subject: `[Contato] ${safeSubject}`,
