@@ -14,6 +14,7 @@ import {
   XCircle,
   Clock,
   Trash2,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -214,6 +215,14 @@ export default function Learning() {
           <Button 
             variant="ghost" 
             className="w-full justify-start gap-3"
+            onClick={() => navigate("/bankroll")}
+          >
+            <Wallet className="h-4 w-4" />
+            Gestão de Banca
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start gap-3"
             onClick={() => navigate("/settings")}
           >
             <Settings className="h-4 w-4" />
@@ -296,6 +305,17 @@ export default function Learning() {
               >
                 <BarChart3 className="h-4 w-4" />
                 Estatísticas
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-3"
+                onClick={() => {
+                  setSidebarOpen(false);
+                  navigate("/bankroll");
+                }}
+              >
+                <Wallet className="h-4 w-4" />
+                Gestão de Banca
               </Button>
               <Button 
                 variant="ghost" 

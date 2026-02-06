@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      bankroll_entries: {
+        Row: {
+          bet_type: string
+          created_at: string | null
+          id: string
+          linked_analysis_id: string | null
+          odd_total: number | null
+          profit_loss: number | null
+          risk_level: string | null
+          stake: number
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          bet_type: string
+          created_at?: string | null
+          id?: string
+          linked_analysis_id?: string | null
+          odd_total?: number | null
+          profit_loss?: number | null
+          risk_level?: string | null
+          stake: number
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          bet_type?: string
+          created_at?: string | null
+          id?: string
+          linked_analysis_id?: string | null
+          odd_total?: number | null
+          profit_loss?: number | null
+          risk_level?: string | null
+          stake?: number
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       bankroll_management: {
         Row: {
           created_at: string
@@ -40,6 +82,39 @@ export type Database = {
           initial_bankroll?: number
           unit_value?: number
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      bankroll_settings: {
+        Row: {
+          banca_atual: number
+          created_at: string | null
+          id: string
+          limite_mensal_exposicao: number | null
+          percentual_stake_base: number
+          smart_risk_adjustment: boolean
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          banca_atual?: number
+          created_at?: string | null
+          id?: string
+          limite_mensal_exposicao?: number | null
+          percentual_stake_base?: number
+          smart_risk_adjustment?: boolean
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          banca_atual?: number
+          created_at?: string | null
+          id?: string
+          limite_mensal_exposicao?: number | null
+          percentual_stake_base?: number
+          smart_risk_adjustment?: boolean
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []

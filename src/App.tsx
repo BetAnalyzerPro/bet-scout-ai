@@ -14,6 +14,7 @@ import Analysis from "./pages/Analysis";
 import History from "./pages/History";
 import Statistics from "./pages/Statistics";
 import Settings from "./pages/Settings";
+import Bankroll from "./pages/Bankroll";
 import Learning from "./pages/Learning";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -75,6 +76,7 @@ const App = () => (
               <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/bankroll" element={<ProtectedRoute><Bankroll /></ProtectedRoute>} />
               <Route path="/learning" element={<ProtectedRoute><Learning /></ProtectedRoute>} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />

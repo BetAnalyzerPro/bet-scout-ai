@@ -14,6 +14,7 @@ import {
   ChevronRight,
   ImageIcon,
   GraduationCap,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -173,6 +174,14 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             className="w-full justify-start gap-3"
+            onClick={() => navigate("/bankroll")}
+          >
+            <Wallet className="h-4 w-4" />
+            Gestão de Banca
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start gap-3"
             onClick={() => navigate("/learning")}
           >
             <GraduationCap className="h-4 w-4" />
@@ -252,6 +261,17 @@ export default function Dashboard() {
               >
                 <BarChart3 className="h-4 w-4" />
                 Estatísticas
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-3"
+                onClick={() => {
+                  setSidebarOpen(false);
+                  navigate("/bankroll");
+                }}
+              >
+                <Wallet className="h-4 w-4" />
+                Gestão de Banca
               </Button>
               <Button 
                 variant="ghost" 
