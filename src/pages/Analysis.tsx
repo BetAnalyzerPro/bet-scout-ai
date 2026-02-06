@@ -577,22 +577,6 @@ export default function Analysis() {
           )}
         </div>
 
-        {/* Original Image */}
-        {analysis.original_image_url && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Bilhete Original</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <img
-                src={analysis.original_image_url}
-                alt="Bilhete original"
-                className="max-w-full h-auto rounded-lg border"
-              />
-            </CardContent>
-          </Card>
-        )}
-
         {/* Actions */}
         <div className="flex justify-center gap-4 pt-4">
           <Button variant="outline" onClick={() => navigate("/dashboard")}>
