@@ -323,7 +323,9 @@ export default function Dashboard() {
               <div className="min-w-0">
                 <h1 className="text-lg sm:text-xl font-semibold">Dashboard</h1>
                 <p className="text-xs sm:text-sm text-muted-foreground">
-                  {getDailyLimit(profile?.current_plan || 'free') - (profile?.daily_analyses_used || 0) > 0 
+                  {getAnalysesLimit() === "∞" 
+                    ? "Você possui análises ilimitadas hoje."
+                    : getDailyLimit(profile?.current_plan || 'free') - (profile?.daily_analyses_used || 0) > 0 
                     ? `Você ainda pode analisar mais ${getDailyLimit(profile?.current_plan || 'free') - (profile?.daily_analyses_used || 0)} bilhetes hoje.`
                     : "Limite diário atingido. Volte amanhã ou faça upgrade."
                   }
