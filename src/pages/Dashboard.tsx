@@ -147,7 +147,7 @@ export default function Dashboard() {
       {/* Sidebar - Desktop */}
       <aside className="hidden lg:flex flex-col w-64 border-r border-border bg-card">
         <div className="p-6">
-          <Logo size="sm" />
+          <Logo size="lg" />
         </div>
 
         <nav className="flex-1 px-4 space-y-2">
@@ -229,7 +229,7 @@ export default function Dashboard() {
           <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
           <aside className="fixed left-0 top-0 bottom-0 w-72 bg-card border-r border-border animate-slide-in-from-left">
             <div className="flex items-center justify-between p-6">
-              <Logo size="sm" />
+              <Logo size="lg" />
               <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)}>
                 <X className="h-5 w-5" />
               </Button>

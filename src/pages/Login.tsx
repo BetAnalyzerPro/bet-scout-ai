@@ -65,7 +65,7 @@ export default function Login() {
       {/* Header */}
       <header className="flex items-center justify-between p-4 md:p-6">
         <Link to="/">
-          <Logo size="sm" />
+          <Logo size="lg" />
         </Link>
       </header>
 
