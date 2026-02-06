@@ -253,7 +253,7 @@ export default function Terms() {
       <footer className="border-t border-border py-6">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm text-muted-foreground">
-            © 2024 Bet Analizer. Todos os direitos reservados.
+            © 2026 Bet Analizer. Todos os direitos reservados.
           </p>
         </div>
       </footer>
