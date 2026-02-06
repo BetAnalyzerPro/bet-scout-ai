@@ -34,6 +34,11 @@ export interface PlanConfig {
   colorClass: string;
   bgClass: string;
   borderClass: string;
+  // Bankroll limits
+  bankrollEntriesPerDay: number;
+  canSeeAlerts: boolean;
+  canUseSmartRisk: boolean;
+  canExportCSV: boolean;
 }
 
 export const PLANS: Record<PlanType, PlanConfig> = {
@@ -62,6 +67,10 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     colorClass: "text-success",
     bgClass: "bg-success/10",
     borderClass: "border-success/30",
+    bankrollEntriesPerDay: 1,
+    canSeeAlerts: false,
+    canUseSmartRisk: false,
+    canExportCSV: false,
   },
   basic: {
     id: "basic",
@@ -89,6 +98,10 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     colorClass: "text-warning",
     bgClass: "bg-warning/10",
     borderClass: "border-warning/30",
+    bankrollEntriesPerDay: 10,
+    canSeeAlerts: true,
+    canUseSmartRisk: false,
+    canExportCSV: false,
   },
   pro: {
     id: "pro",
@@ -117,6 +130,10 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     colorClass: "text-info",
     bgClass: "bg-info/10",
     borderClass: "border-info/30",
+    bankrollEntriesPerDay: 50,
+    canSeeAlerts: true,
+    canUseSmartRisk: true,
+    canExportCSV: false,
   },
   elite: {
     id: "elite",
@@ -144,6 +161,10 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     colorClass: "text-purple-600 dark:text-purple-400",
     bgClass: "bg-purple-600/10 dark:bg-purple-400/10",
     borderClass: "border-purple-600/30 dark:border-purple-400/30",
+    bankrollEntriesPerDay: 200,
+    canSeeAlerts: true,
+    canUseSmartRisk: true,
+    canExportCSV: true,
   },
 };
 
