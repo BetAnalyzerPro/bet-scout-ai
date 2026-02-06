@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -23,11 +24,59 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Initialize Supabase client with service role for rate limiting
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Get client IP for rate limiting
+    const clientIP = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || 
+                     req.headers.get("x-real-ip") || 
+                     "unknown";
+
+    // Check rate limit: 3 requests per hour per IP
+    const { data: rateLimitOk, error: rateLimitError } = await supabase.rpc("check_rate_limit", {
+      p_identifier: clientIP,
+      p_action: "contact_form",
+      p_max_count: 3,
+      p_window_minutes: 60,
+    });
+
+    if (rateLimitError) {
+      console.error("Rate limit check error:", rateLimitError);
+    }
+
+    if (rateLimitOk === false) {
+      console.warn(`Rate limit exceeded for IP: ${clientIP}`);
+      
+      // Log rate limit exceeded event
+      await supabase.rpc("log_security_event", {
+        p_user_id: null,
+        p_event_type: "rate_limit_exceeded",
+        p_ip_address: clientIP,
+        p_metadata: { action: "contact_form" },
+        p_severity: "warn",
+      });
+
+      return new Response(
+        JSON.stringify({ error: "Muitas tentativas. Tente novamente em 1 hora." }),
+        {
+          status: 429,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
     const { name, email, subject, message }: ContactRequest = await req.json();
 
     // Validate required fields
     if (!name || !email || !subject || !message) {
       throw new Error("Todos os campos são obrigatórios");
+    }
+
+    // Enforce length limits to prevent abuse
+    if (name.length > 100 || email.length > 255 || subject.length > 200 || message.length > 5000) {
+      throw new Error("Um ou mais campos excedem o limite de caracteres");
     }
 
     // Validate email format
@@ -77,6 +126,18 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     console.log("Contact email sent successfully:", emailResponse);
+
+    // Log successful contact form submission (for monitoring)
+    await supabase.rpc("log_security_event", {
+      p_user_id: null,
+      p_event_type: "suspicious_activity", // Using existing enum value for tracking
+      p_ip_address: clientIP,
+      p_metadata: { 
+        action: "contact_form_success",
+        email_masked: email.replace(/(.{2})(.*)(@.*)/, "$1***$3") 
+      },
+      p_severity: "info",
+    });
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
