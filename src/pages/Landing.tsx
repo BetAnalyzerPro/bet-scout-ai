@@ -323,7 +323,7 @@ export default function Landing() {
       <footer className="border-t border-border py-6 sm:py-10">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center gap-4 sm:gap-5 md:flex-row md:justify-between">
-            <Logo size="sm" />
+            <Logo size="lg" />
             <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm sm:text-base text-muted-foreground">
               <Link to="/terms" className="hover:text-foreground transition-colors min-h-[44px] flex items-center">
                 Termos de Uso
