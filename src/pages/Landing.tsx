@@ -336,7 +336,7 @@ export default function Landing() {
               </Link>
             </div>
             <p className="text-sm sm:text-base text-muted-foreground text-center">
-              © 2024 Bet Analizer. Todos os direitos reservados.
+              © 2026 Bet Analizer. Todos os direitos reservados.
             </p>
           </div>
           <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-border/50 text-center">
