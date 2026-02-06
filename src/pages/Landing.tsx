@@ -11,13 +11,16 @@ import {
   BookOpen,
   LineChart,
   Lightbulb,
-  GraduationCap
+  GraduationCap,
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { PLANS, PRICING_PLANS, PAYWALL_MESSAGES } from "@/config/plans";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import type { StripePlanKey } from "@/config/stripe";
 
 const features = [
   {
@@ -85,6 +88,16 @@ const differentials = [
 
 export default function Landing() {
   const { user } = useAuth();
+  const { isLoading, loadingPlan, handleCheckout } = useStripeCheckout();
+
+  const handlePlanClick = (planId: string) => {
+    // Free plan always goes to signup
+    if (planId === "free") {
+      return;
+    }
+    // Paid plans trigger checkout
+    handleCheckout(planId as StripePlanKey);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -272,14 +285,33 @@ export default function Landing() {
                         </li>
                       ))}
                     </ul>
-                    <Button 
-                      asChild 
-                      className={`w-full h-11 sm:h-10 text-base ${plan.isPopular ? 'gradient-primary text-primary-foreground' : ''}`}
-                      variant={plan.isPopular ? "default" : "outline"}
-                      size="sm"
-                    >
-                      <Link to="/signup">{plan.cta}</Link>
-                    </Button>
+                    {planId === "free" ? (
+                      <Button 
+                        asChild 
+                        className={`w-full h-11 sm:h-10 text-base ${plan.isPopular ? 'gradient-primary text-primary-foreground' : ''}`}
+                        variant={plan.isPopular ? "default" : "outline"}
+                        size="sm"
+                      >
+                        <Link to="/signup">{plan.cta}</Link>
+                      </Button>
+                    ) : (
+                      <Button 
+                        className={`w-full h-11 sm:h-10 text-base ${plan.isPopular ? 'gradient-primary text-primary-foreground' : ''}`}
+                        variant={plan.isPopular ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handlePlanClick(planId)}
+                        disabled={isLoading && loadingPlan === planId}
+                      >
+                        {isLoading && loadingPlan === planId ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                            Processando...
+                          </>
+                        ) : (
+                          plan.cta
+                        )}
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               );
