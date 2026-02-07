@@ -566,22 +566,28 @@ Se não conseguir ler algo claramente, faça sua melhor interpretação. Sempre 
     if (!extractionResponse.ok) {
       const errorText = await extractionResponse.text();
       console.error("Extraction API error:", extractionResponse.status, errorText);
-      
+
       if (extractionResponse.status === 429) {
         return new Response(
           JSON.stringify({ error: "Muitas requisições. Aguarde um momento e tente novamente." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      
+
       if (extractionResponse.status === 402) {
         return new Response(
-          JSON.stringify({ error: "Serviço de IA temporariamente indisponível. Tente novamente em alguns minutos." }),
-          { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({
+            error:
+              "Sem saldo/limite disponível no serviço de IA neste momento. Verifique o faturamento/limites da sua chave do Google ou adicione saldo no provedor alternativo e tente novamente.",
+          }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      
-      throw new Error(`Extraction failed: ${extractionResponse.status}`);
+
+      return new Response(
+        JSON.stringify({ error: "Falha ao extrair dados do bilhete. Tente novamente." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const extractionData = await extractionResponse.json();
@@ -770,8 +776,30 @@ Retorne apenas JSON válido.`
     });
 
     if (!analysisResponse.ok) {
-      console.error("Analysis API error:", analysisResponse.status);
-      throw new Error(`Analysis failed: ${analysisResponse.status}`);
+      const errorText = await analysisResponse.text();
+      console.error("Analysis API error:", analysisResponse.status, errorText);
+
+      if (analysisResponse.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "Muitas requisições. Aguarde um momento e tente novamente." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      if (analysisResponse.status === 402) {
+        return new Response(
+          JSON.stringify({
+            error:
+              "Sem saldo/limite disponível no serviço de IA neste momento. Verifique o faturamento/limites da sua chave do Google ou adicione saldo no provedor alternativo e tente novamente.",
+          }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      return new Response(
+        JSON.stringify({ error: "Falha ao analisar o bilhete. Tente novamente." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const analysisData = await analysisResponse.json();
