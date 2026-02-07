@@ -439,7 +439,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
+        model: "google/gemini-2.5-flash",
         messages: [
           {
             role: "system",
@@ -492,8 +492,15 @@ Se não conseguir ler algo claramente, faça sua melhor interpretação. Sempre 
       
       if (extractionResponse.status === 429) {
         return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
+          JSON.stringify({ error: "Muitas requisições. Aguarde um momento e tente novamente." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      if (extractionResponse.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "Serviço de IA temporariamente indisponível. Tente novamente em alguns minutos." }),
+          { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       
@@ -559,7 +566,7 @@ Se não conseguir ler algo claramente, faça sua melhor interpretação. Sempre 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
+        model: "google/gemini-2.5-flash",
         messages: [
           {
             role: "system",
