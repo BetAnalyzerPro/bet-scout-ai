@@ -75,6 +75,77 @@ function validateImageData(imageBase64: string): { valid: boolean; error?: strin
   return { valid: true, mimeType };
 }
 
+const GOOGLE_OPENAI_COMPAT_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+const LOVABLE_AI_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+type AiProvider = "google" | "lovable";
+
+async function callChatCompletions(provider: AiProvider, apiKey: string, body: any): Promise<Response> {
+  const url = provider === "google" ? GOOGLE_OPENAI_COMPAT_URL : LOVABLE_AI_URL;
+
+  return await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+async function callChatCompletionsWithFallback({
+  body,
+  googleApiKey,
+  lovableApiKey,
+  lovableModel,
+  retries,
+}: {
+  body: any;
+  googleApiKey?: string | null;
+  lovableApiKey?: string | null;
+  lovableModel: string;
+  retries: number;
+}): Promise<Response> {
+  // 1) Prefer Google (your own key)
+  if (googleApiKey) {
+    let attempt = 0;
+    // Retry only on 429 (rate/quota) with exponential-ish backoff
+    while (true) {
+      const resp = await callChatCompletions("google", googleApiKey, body);
+      if (resp.ok) return resp;
+
+      if (resp.status === 429 && attempt < retries) {
+        await sleep(500 * Math.pow(2, attempt)); // 500ms, 1s, 2s...
+        attempt++;
+        continue;
+      }
+
+      // If still 429 and we have Lovable key, fallback to keep the app working
+      if (resp.status === 429 && lovableApiKey) {
+        const lovableBody = { ...body, model: lovableModel };
+        return await callChatCompletions("lovable", lovableApiKey, lovableBody);
+      }
+
+      return resp;
+    }
+  }
+
+  // 2) Fallback to Lovable AI if Google key isn't available
+  if (lovableApiKey) {
+    const lovableBody = { ...body, model: lovableModel };
+    return await callChatCompletions("lovable", lovableApiKey, lovableBody);
+  }
+
+  return new Response(JSON.stringify({ error: "AI service not configured" }), {
+    status: 500,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 interface ExtractedBet {
   homeTeam: string;
   awayTeam: string;
@@ -407,8 +478,13 @@ Deno.serve(async (req) => {
     }
 
     const GOOGLE_AI_API_KEY = Deno.env.get("GOOGLE_AI_API_KEY");
-    if (!GOOGLE_AI_API_KEY) {
-      console.error("GOOGLE_AI_API_KEY not configured");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+
+    // We can operate with either provider:
+    // - Prefer Google (your own billing/quota)
+    // - Fallback to Lovable AI to avoid breaking the app during quota/rate-limit events
+    if (!GOOGLE_AI_API_KEY && !LOVABLE_API_KEY) {
+      console.error("No AI provider configured (GOOGLE_AI_API_KEY/LOVABLE_API_KEY missing)");
       return new Response(
         JSON.stringify({ error: "AI service not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -429,21 +505,15 @@ Deno.serve(async (req) => {
     // Fetch learning context in parallel - ONLY for the authenticated user
     const learningContextPromise = fetchLearningContext(supabase, user.id);
 
-    console.log("Starting OCR extraction with Lovable AI...");
+    console.log("Starting OCR extraction...");
 
     // Step 1: Extract bet data from image using vision model
-    const extractionResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${GOOGLE_AI_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gemini-2.5-flash",
-        messages: [
-          {
-            role: "system",
-            content: `Você é um especialista em ler bilhetes de apostas esportivas. Extraia todas as informações de apostas da imagem.
+    const extractionBody = {
+      model: "gemini-2.5-flash",
+      messages: [
+        {
+          role: "system",
+          content: `Você é um especialista em ler bilhetes de apostas esportivas. Extraia todas as informações de apostas da imagem.
             
 Retorne um objeto JSON com esta estrutura exata:
 {
@@ -466,24 +536,31 @@ Retorne um objeto JSON com esta estrutura exata:
 Mantenha os nomes dos mercados em português: "Over X" = "Mais de X", "Under" = "Menos de", "Win" = "Vitória", "Draw" = "Empate", "Asian Handicap" = "Handicap Asiático", "Both Teams to Score" = "Ambas Marcam", "Corners" = "Escanteios".
 
 Se não conseguir ler algo claramente, faça sua melhor interpretação. Sempre retorne JSON válido.`
-          },
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "Extract all betting information from this betting slip image. Return only valid JSON, no markdown."
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: imageBase64.startsWith("data:") ? imageBase64 : `data:image/jpeg;base64,${imageBase64}`
-                }
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Extract all betting information from this betting slip image. Return only valid JSON, no markdown."
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: imageBase64.startsWith("data:") ? imageBase64 : `data:image/jpeg;base64,${imageBase64}`
               }
-            ]
-          }
-        ],
-      }),
+            }
+          ]
+        }
+      ],
+    };
+
+    const extractionResponse = await callChatCompletionsWithFallback({
+      body: extractionBody,
+      googleApiKey: GOOGLE_AI_API_KEY,
+      lovableApiKey: LOVABLE_API_KEY,
+      lovableModel: "google/gemini-2.5-flash-lite",
+      retries: 2,
     });
 
     if (!extractionResponse.ok) {
@@ -559,18 +636,15 @@ Se não conseguir ler algo claramente, faça sua melhor interpretação. Sempre 
     // Step 2: Analyze each bet for risk with comprehensive scout analysis
     console.log("Starting comprehensive scout analysis with dual API data...");
 
-    const analysisResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${GOOGLE_AI_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gemini-2.5-flash",
-        messages: [
-          {
-            role: "system",
-            content: `Você é um SCOUT PROFISSIONAL de apostas esportivas com acesso a dados estatísticos de MÚLTIPLAS FONTES (FootyStats e API Futebol). Sua análise deve considerar dados de ambas as fontes para chegar a conclusões mais precisas. RESPONDA SEMPRE EM PORTUGUÊS DO BRASIL.
+    // small delay to reduce provider burst (helps with free-tier RPM)
+    await sleep(250);
+
+    const analysisBody = {
+      model: "gemini-2.5-flash",
+      messages: [
+        {
+          role: "system",
+          content: `Você é um SCOUT PROFISSIONAL de apostas esportivas com acesso a dados estatísticos de MÚLTIPLAS FONTES (FootyStats e API Futebol). Sua análise deve considerar dados de ambas as fontes para chegar a conclusões mais precisas. RESPONDA SEMPRE EM PORTUGUÊS DO BRASIL.
 
 ${learningContext}
 
@@ -668,10 +742,10 @@ Retorne um objeto JSON:
 - Avalie a importância do jogo para cada equipe
 - Use seu conhecimento de futebol para prever padrões táticos
 - DESTAQUE onde as APIs concordam (maior confiança) e onde divergem (mais cautela)`
-          },
-          {
-            role: "user",
-            content: `Analise estas apostas como um SCOUT PROFISSIONAL, usando dados de MÚLTIPLAS FONTES para chegar ao melhor consenso.
+        },
+        {
+          role: "user",
+          content: `Analise estas apostas como um SCOUT PROFISSIONAL, usando dados de MÚLTIPLAS FONTES para chegar ao melhor consenso.
 
 ## APOSTAS DO BILHETE:
 ${JSON.stringify(extractedData.bets, null, 2)}
@@ -683,9 +757,16 @@ ${footyStatsContext ? `## DADOS DA FOOTYSTATS API:${footyStatsContext}` : ""}
 Analise TODOS os mercados (escanteios HT/FT, gols todas linhas, resultado HT, handicap europeu) e forneça uma PREVISÃO DE PLACAR EXATO para cada partida, considerando o consenso entre as fontes de dados.
 
 Retorne apenas JSON válido.`
-          }
-        ],
-      }),
+        }
+      ],
+    };
+
+    const analysisResponse = await callChatCompletionsWithFallback({
+      body: analysisBody,
+      googleApiKey: GOOGLE_AI_API_KEY,
+      lovableApiKey: LOVABLE_API_KEY,
+      lovableModel: "google/gemini-2.5-flash-lite",
+      retries: 2,
     });
 
     if (!analysisResponse.ok) {
