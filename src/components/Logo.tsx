@@ -22,8 +22,10 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
         <div ref={ref} className={`flex items-center ${className || ""}`} {...props}>
           <img 
             src={logoImage} 
-            alt="Bet Analizer Logo" 
+            alt="Bet Analizer — plataforma de análise de risco para apostas esportivas" 
             className="w-auto h-[100px] sm:h-[140px]"
+            width={280}
+            height={140}
             style={{ maxHeight: "none" }}
           />
         </div>
@@ -34,7 +36,10 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
       <div ref={ref} className={`flex items-center ${className || ""}`} {...props}>
         <img 
           src={logoImage} 
-          alt="Bet Analizer Logo" 
+          alt="Bet Analizer — plataforma de análise de risco para apostas esportivas" 
+          loading="lazy"
+          width={280}
+          height={140}
           style={{ ...sizeStyles[size], width: "auto", maxHeight: "none" }}
         />
       </div>

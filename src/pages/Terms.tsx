@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Shield, AlertTriangle } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Logo } from "@/components/Logo";
@@ -13,6 +14,7 @@ export default function Terms() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="Termos de Uso" description="Termos de uso do Bet Analizer. Conheça as condições de uso da plataforma de análise de risco para apostas esportivas." path="/terms" />
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background border-b border-border/50">
         <div className="container mx-auto flex items-center justify-between px-4 py-2">

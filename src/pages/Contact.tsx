@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { SEO } from "@/components/SEO";
 import { ArrowLeft, Mail, Send, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -92,6 +93,7 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="Contato e Suporte" description="Entre em contato com a equipe do Bet Analizer. Suporte, dúvidas e solicitações sobre a plataforma de análise de risco." path="/contact" />
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background border-b border-border/50">
         <div className="container mx-auto flex items-center justify-between px-4 py-2">

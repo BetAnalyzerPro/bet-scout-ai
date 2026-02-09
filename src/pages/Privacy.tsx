@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Shield, Lock } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Logo } from "@/components/Logo";
@@ -13,6 +14,7 @@ export default function Privacy() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="Política de Privacidade e LGPD" description="Política de privacidade e proteção de dados (LGPD) do Bet Analizer. Saiba como seus dados são tratados." path="/privacy" />
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background border-b border-border/50">
         <div className="container mx-auto flex items-center justify-between px-4 py-2">

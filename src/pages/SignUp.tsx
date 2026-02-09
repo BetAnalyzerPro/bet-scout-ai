@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { SEO } from "@/components/SEO";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -76,6 +77,7 @@ export default function SignUp() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="Criar Conta" description="Crie sua conta gratuita no Bet Analizer. Analise riscos das suas apostas esportivas com dados e contexto." path="/signup" />
       {/* Header */}
       <header className="flex items-center justify-between p-4 md:p-6">
         <Link to="/">

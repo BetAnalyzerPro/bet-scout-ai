@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { SEO } from "@/components/SEO";
+import { JsonLd } from "@/components/JsonLd";
 import { 
   BarChart3, 
   Shield, 
@@ -102,6 +104,12 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO
+        title="Bet Analizer | Análise de Risco para Apostas Esportivas"
+        description="Plataforma de análise de risco para apostas esportivas. Entenda onde seu bilhete pode falhar antes de apostar."
+        path="/"
+      />
+      <JsonLd />
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background border-b border-border/50">
         <div className="container mx-auto flex items-center justify-between px-4 py-2">
@@ -371,25 +379,31 @@ export default function Landing() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center gap-4 sm:gap-5 md:flex-row md:justify-between">
             <Logo size="lg" />
-            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm sm:text-base text-muted-foreground">
+            <nav className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm sm:text-base text-muted-foreground" aria-label="Links legais">
               <Link to="/terms" className="hover:text-foreground transition-colors min-h-[44px] flex items-center">
                 Termos de Uso
               </Link>
               <Link to="/privacy" className="hover:text-foreground transition-colors min-h-[44px] flex items-center">
-                Privacidade
+                Privacidade e LGPD
               </Link>
               <Link to="/contact" className="hover:text-foreground transition-colors min-h-[44px] flex items-center">
-                Contato
+                Contato e Suporte
               </Link>
-            </div>
+            </nav>
             <p className="text-sm sm:text-base text-muted-foreground text-center">
               © 2026 Bet Analizer. Todos os direitos reservados.
             </p>
           </div>
-          <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-border/50 text-center">
+          <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-border/50 text-center space-y-2">
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2">
-              O Bet Analizer é uma ferramenta de análise estatística e educação para apostadores recreativos. 
-              Não garantimos ganhos e não somos responsáveis por perdas. Apostas envolvem risco. 
+              O Bet Analizer é uma ferramenta educacional de análise de risco. Não garantimos ganhos financeiros. 
+              Apostas envolvem risco de perda e são de responsabilidade exclusiva do usuário.
+            </p>
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2">
+              O Bet Analizer não é uma casa de apostas e não realiza apostas. 
+              Plataforma digital de análise de apostas esportivas.
+            </p>
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2">
               Se você ou alguém que conhece tem problemas com jogo, procure ajuda profissional.
             </p>
           </div>
