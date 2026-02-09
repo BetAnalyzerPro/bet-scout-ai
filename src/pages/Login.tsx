@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { SEO } from "@/components/SEO";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -62,6 +63,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="Entrar" description="Faça login no Bet Analizer para acessar suas análises de risco para apostas esportivas." path="/login" />
       {/* Header */}
       <header className="flex items-center justify-between p-4 md:p-6">
         <Link to="/">
