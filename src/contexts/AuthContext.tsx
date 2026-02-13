@@ -27,6 +27,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  devPlanOverride: Profile["current_plan"] | null;
+  setDevPlanOverride: (plan: Profile["current_plan"] | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -36,6 +38,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [devPlanOverride, setDevPlanOverride] = useState<Profile["current_plan"] | null>(null);
+
+  // Apply dev override to profile for testing
+  const effectiveProfile = profile && devPlanOverride
+    ? { ...profile, current_plan: devPlanOverride }
+    : profile;
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -145,12 +153,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         session,
-        profile,
+        profile: effectiveProfile,
         isLoading,
         signUp,
         signIn,
         signOut,
         refreshProfile,
+        devPlanOverride,
+        setDevPlanOverride,
       }}
     >
       {children}

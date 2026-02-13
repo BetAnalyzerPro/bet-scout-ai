@@ -59,6 +59,8 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+import { DevPlanSwitcher } from "@/components/DevPlanSwitcher";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
@@ -84,6 +86,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
+          <DevPlanSwitcher />
         </TooltipProvider>
       </AuthProvider>
     </ThemeProvider>
