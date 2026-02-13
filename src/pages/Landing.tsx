@@ -396,15 +396,16 @@ export default function Landing() {
           </div>
           <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-border/50 text-center space-y-2">
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2">
-              O Bet Analizer é uma ferramenta educacional de análise de risco. Não garantimos ganhos financeiros. 
-              Apostas envolvem risco de perda e são de responsabilidade exclusiva do usuário.
+              O Bet Analizer é uma plataforma digital de análise estatística e gestão de risco para apostas esportivas.
             </p>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2">
-              O Bet Analizer não é uma casa de apostas e não realiza apostas. 
-              Plataforma digital de análise de apostas esportivas.
+              Não realizamos apostas e não somos casa de apostas.
             </p>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2">
-              Se você ou alguém que conhece tem problemas com jogo, procure ajuda profissional.
+              Este serviço é destinado exclusivamente a maiores de 18 anos.
+            </p>
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2">
+              Apostas envolvem risco financeiro. Utilize a plataforma com responsabilidade.
             </p>
           </div>
         </div>
