@@ -60,8 +60,8 @@ const features = [
 
 // Plan context phrases for each tier
 const planContextPhrases: Record<string, string> = {
-  free: "Para entender seus erros antes de continuar apostando.",
-  basic: "Para quem quer parar de apostar por impulso.",
+  free: "Para quem quer parar de errar no impulso.",
+  basic: "Para quem quer parar de apostar no escuro.",
   pro: "Para quem busca consistência, não sorte.",
   elite: "Para quem trata apostas como gestão de risco.",
 };
