@@ -31,7 +31,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: "dashboard", label: "Nova Análise", icon: Upload, route: "/dashboard" },
   { id: "history", label: "Histórico", icon: History, route: "/history" },
   { id: "statistics", label: "Estatísticas", icon: BarChart3, route: "/statistics" },
-  { id: "bankroll", label: "Gestão de Banca", icon: Wallet, route: "/bankroll", feature: "bankroll_management" },
+  { id: "bankroll", label: "Gestão de Banca", icon: Wallet, route: "/bankroll" },
   { id: "learning", label: "Aprendizado da IA", icon: GraduationCap, route: "/learning" },
   { id: "settings", label: "Configurações", icon: Settings, route: "/settings" },
 ];
