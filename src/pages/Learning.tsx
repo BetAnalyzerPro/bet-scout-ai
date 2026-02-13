@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,6 +11,10 @@ import {
   XCircle,
   Clock,
   Trash2,
+  Lock,
+  TrendingUp,
+  BarChart3,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { uploadTicketImage } from "@/lib/uploadTicket";
+import { getLearningTier, canAccessLearningFeature } from "@/lib/learningAccess";
 
 type FeedbackResult = "green" | "red";
 
@@ -43,6 +48,15 @@ export default function Learning() {
   const [isUploading, setIsUploading] = useState(false);
   const [selectedResult, setSelectedResult] = useState<FeedbackResult | null>(null);
   const [notes, setNotes] = useState("");
+
+  const userPlan = profile?.current_plan || "free";
+  const tier = getLearningTier(userPlan);
+  const isFree = tier === "free";
+  const isBasic = tier === "basic";
+  const canRegister = canAccessLearningFeature("register_result", userPlan);
+  const canFullHistory = canAccessLearningFeature("full_history", userPlan);
+  const canPatterns = canAccessLearningFeature("detected_patterns", userPlan);
+  const canAdvancedReports = canAccessLearningFeature("comparative_report", userPlan);
 
   // Fetch user's learning feedback
   const { data: feedbacks = [], isLoading } = useQuery({
@@ -166,10 +180,20 @@ export default function Learning() {
     }
   };
 
+  // Filter feedbacks for Basic (7 days only)
+  const visibleFeedbacks = useMemo(() => {
+    if (!canFullHistory && canRegister) {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      return feedbacks.filter(f => new Date(f.created_at) >= sevenDaysAgo);
+    }
+    return feedbacks;
+  }, [feedbacks, canFullHistory, canRegister]);
+
   const stats = {
-    total: feedbacks.length,
-    greens: feedbacks.filter(f => f.result === "green").length,
-    reds: feedbacks.filter(f => f.result === "red").length,
+    total: visibleFeedbacks.length,
+    greens: visibleFeedbacks.filter(f => f.result === "green").length,
+    reds: visibleFeedbacks.filter(f => f.result === "red").length,
   };
 
   return (
@@ -292,8 +316,30 @@ export default function Learning() {
 
         {/* Content */}
         <div className="flex-1 p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
-          {/* First Access Welcome Message */}
-          {feedbacks.length === 0 && (
+          {/* Free Plan Lock Banner */}
+          {isFree && (
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="p-4 sm:p-5">
+                <div className="flex items-start gap-3">
+                  <Lock className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium mb-1">
+                      O Aprendizado da IA permite que o sistema evolua com seus erros e acertos.
+                    </p>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Disponível a partir do plano Basic.
+                    </p>
+                    <Button size="sm" onClick={() => navigate("/planos")}>
+                      Desbloquear Aprendizado
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* First Access Welcome Message - only for paying users */}
+          {!isFree && feedbacks.length === 0 && (
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="p-4 sm:p-5">
                 <p className="text-xs sm:text-sm text-muted-foreground">
@@ -304,7 +350,7 @@ export default function Learning() {
           )}
 
           {/* Transversal Message for New Users */}
-          {feedbacks.length >= 1 && feedbacks.length <= 3 && (
+          {!isFree && feedbacks.length >= 1 && feedbacks.length <= 3 && (
             <Card className="border-muted bg-muted/30">
               <CardContent className="p-3 sm:p-4">
                 <p className="text-xs sm:text-sm text-muted-foreground">
@@ -315,29 +361,124 @@ export default function Learning() {
           )}
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-3 gap-3 sm:gap-4">
+          <div className={`grid grid-cols-3 gap-3 sm:gap-4 ${isFree ? "blur-sm pointer-events-none select-none" : ""}`}>
             <Card>
               <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
                 <CardDescription className="text-xs sm:text-sm">Total</CardDescription>
-                <CardTitle className="text-xl sm:text-2xl md:text-3xl">{stats.total}</CardTitle>
+                <CardTitle className="text-xl sm:text-2xl md:text-3xl">{isFree ? "–" : stats.total}</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
                 <CardDescription className="text-xs sm:text-sm">Greens</CardDescription>
-                <CardTitle className="text-xl sm:text-2xl md:text-3xl text-risk-low">{stats.greens}</CardTitle>
+                <CardTitle className="text-xl sm:text-2xl md:text-3xl text-risk-low">{isFree ? "–" : stats.greens}</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
                 <CardDescription className="text-xs sm:text-sm">Reds</CardDescription>
-                <CardTitle className="text-xl sm:text-2xl md:text-3xl text-risk-high">{stats.reds}</CardTitle>
+                <CardTitle className="text-xl sm:text-2xl md:text-3xl text-risk-high">{isFree ? "–" : stats.reds}</CardTitle>
               </CardHeader>
             </Card>
           </div>
 
-          {/* Result Selection */}
-          <Card>
+          {/* Basic history limit note */}
+          {isBasic && (
+            <p className="text-xs text-muted-foreground text-center">
+              Exibindo histórico dos últimos 7 dias.
+            </p>
+          )}
+
+          {/* Patterns & Behavioral Section — Pro+ only */}
+          <Card className={`relative ${!canPatterns ? "overflow-hidden" : ""}`}>
+            {!canPatterns && (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/60 backdrop-blur-[2px] rounded-lg">
+                <Lock className="h-5 w-5 text-muted-foreground mb-2" />
+                <p className="text-xs sm:text-sm text-muted-foreground text-center px-4 mb-3">
+                  {isFree
+                    ? "Análise comportamental disponível a partir do plano Basic."
+                    : "Análise comportamental avançada disponível no plano Pro."}
+                </p>
+                <Button size="sm" variant="outline" onClick={() => navigate("/planos")}>
+                  {isFree ? "Ver planos" : "Evoluir para Pro"}
+                </Button>
+              </div>
+            )}
+            <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
+              <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" /> Padrões Detectados
+              </CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
+                Tendências e comportamento baseados no seu histórico
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6 pt-0 space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <span className="text-sm">Tendência de risco</span>
+                <span className="text-sm font-medium">62% moderado</span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <span className="text-sm">Padrão emocional</span>
+                <span className="text-sm font-medium">Conservador</span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <span className="text-sm">Evolução mensal</span>
+                <span className="text-sm font-medium">+8% consistência</span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <span className="text-sm">Sugestão</span>
+                <span className="text-sm font-medium text-muted-foreground">Evite odds acima de 3.5</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Elite-only: Advanced Reports */}
+          <Card className={`relative ${!canAdvancedReports ? "overflow-hidden" : ""}`}>
+            {!canAdvancedReports && (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/60 backdrop-blur-[2px] rounded-lg">
+                <Lock className="h-5 w-5 text-muted-foreground mb-2" />
+                <p className="text-xs sm:text-sm text-muted-foreground text-center px-4 mb-3">
+                  Relatórios avançados disponíveis no plano Elite.
+                </p>
+                <Button size="sm" variant="outline" onClick={() => navigate("/planos")}>
+                  Ver planos
+                </Button>
+              </div>
+            )}
+            <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
+              <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                <BarChart3 className="h-4 w-4" /> Relatório Avançado
+              </CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
+                Comparativo mensal, exportação e consistência
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6 pt-0 space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <span className="text-sm">Relatório comparativo mensal</span>
+                <FileText className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <span className="text-sm">Exportação de dados</span>
+                <FileText className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <span className="text-sm">Análise de consistência</span>
+                <FileText className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Upload Section — blocked for Free */}
+          <Card className={`relative ${isFree ? "overflow-hidden" : ""}`}>
+            {isFree && (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/60 backdrop-blur-[2px] rounded-lg">
+                <Lock className="h-5 w-5 text-muted-foreground mb-2" />
+                <p className="text-xs sm:text-sm text-muted-foreground text-center px-4">
+                  Disponível a partir do plano Basic.
+                </p>
+              </div>
+            )}
             <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
               <CardTitle className="text-base sm:text-lg">Enviar Bilhete Concluído</CardTitle>
               <CardDescription className="text-xs sm:text-sm">
@@ -357,6 +498,7 @@ export default function Learning() {
                         : "border-risk-low text-risk-low hover:bg-risk-low/10"
                     }`}
                     onClick={() => setSelectedResult("green")}
+                    disabled={isFree}
                   >
                     <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6" />
                     GREEN
@@ -373,6 +515,7 @@ export default function Learning() {
                         : "border-risk-high text-risk-high hover:bg-risk-high/10"
                     }`}
                     onClick={() => setSelectedResult("red")}
+                    disabled={isFree}
                   >
                     <XCircle className="h-5 w-5 sm:h-6 sm:w-6" />
                     RED
@@ -390,17 +533,18 @@ export default function Learning() {
                   placeholder="Ex: O gol saiu no final do segundo tempo..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
+                  disabled={isFree}
                 />
               </div>
 
               {/* Upload Zone */}
               <div
-                {...getRootProps()}
+                {...(isFree ? {} : getRootProps())}
                 className={`p-6 sm:p-8 text-center cursor-pointer border-2 border-dashed rounded-lg transition-all ${
                   isDragActive ? "bg-primary/5 border-primary" : "border-border hover:border-primary/50"
-                } ${!selectedResult ? "opacity-50 cursor-not-allowed" : ""}`}
+                } ${!selectedResult || isFree ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                <input {...getInputProps()} />
+                {!isFree && <input {...getInputProps()} />}
                 {isUploading ? (
                   <LoadingSpinner size="lg" text="Enviando feedback..." />
                 ) : (
@@ -419,7 +563,15 @@ export default function Learning() {
           </Card>
 
           {/* Recent Feedbacks */}
-          <Card>
+          <Card className={`relative ${isFree ? "overflow-hidden" : ""}`}>
+            {isFree && (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/60 backdrop-blur-[2px] rounded-lg">
+                <Lock className="h-5 w-5 text-muted-foreground mb-2" />
+                <p className="text-xs sm:text-sm text-muted-foreground text-center px-4">
+                  Histórico disponível a partir do plano Basic.
+                </p>
+              </div>
+            )}
             <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
               <CardTitle className="text-base sm:text-lg">Feedbacks Recentes</CardTitle>
               <CardDescription className="text-xs sm:text-sm">Bilhetes que você enviou para aprendizado</CardDescription>
@@ -427,7 +579,7 @@ export default function Learning() {
             <CardContent className="p-4 sm:p-6 pt-0">
               {isLoading ? (
                 <LoadingSpinner text="Carregando..." />
-              ) : feedbacks.length === 0 ? (
+              ) : visibleFeedbacks.length === 0 ? (
                 <div className="text-center py-6 sm:py-8">
                   <Clock className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
                   <p className="text-sm text-muted-foreground mb-2">
@@ -439,7 +591,7 @@ export default function Learning() {
                 </div>
               ) : (
                 <div className="space-y-2 sm:space-y-4">
-                  {feedbacks.slice(0, 10).map((feedback) => (
+                  {visibleFeedbacks.slice(0, 10).map((feedback) => (
                     <div
                       key={feedback.id}
                       className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/50 gap-2"
