@@ -6,10 +6,6 @@ import {
   ArrowLeft,
   LogOut,
   Upload,
-  History,
-  BarChart3,
-  Settings,
-  GraduationCap,
   Wallet,
   Target,
   TrendingUp,
@@ -32,10 +28,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Logo } from "@/components/Logo";
 import { PlanBadge } from "@/components/PlanBadge";
+import { SidebarNav, MobileSidebarNav } from "@/components/SidebarNav";
 import { RiskBadge } from "@/components/RiskBadge";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBankroll, BankrollEntry } from "@/hooks/useBankroll";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { cn } from "@/lib/utils";
 
 export default function Bankroll() {
@@ -199,55 +196,13 @@ export default function Bankroll() {
           <Logo size="lg" />
         </div>
 
-        <nav className="flex-1 px-4 space-y-2">
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start gap-3"
-            onClick={() => navigate("/dashboard")}
-          >
-            <Upload className="h-4 w-4" />
-            Nova Análise
-          </Button>
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start gap-3"
-            onClick={() => navigate("/history")}
-          >
-            <History className="h-4 w-4" />
-            Histórico
-          </Button>
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start gap-3"
-            onClick={() => navigate("/statistics")}
-          >
-            <BarChart3 className="h-4 w-4" />
-            Estatísticas
-          </Button>
-          <Button 
-            variant="secondary" 
-            className="w-full justify-start gap-3"
-          >
-            <Wallet className="h-4 w-4" />
-            Gestão de Banca
-          </Button>
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start gap-3"
-            onClick={() => navigate("/learning")}
-          >
-            <GraduationCap className="h-4 w-4" />
-            Aprendizado da IA
-          </Button>
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start gap-3"
-            onClick={() => navigate("/settings")}
-          >
-            <Settings className="h-4 w-4" />
-            Configurações
-          </Button>
-        </nav>
+        <SidebarNav
+          activePage="bankroll"
+          userPlan={profile?.current_plan || "free"}
+          userName={profile?.full_name || "Usuário"}
+          userInitial={profile?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
+          onSignOut={handleSignOut}
+        />
 
         <div className="p-4 border-t border-border">
           <div className="flex items-center gap-3 mb-4">
@@ -287,56 +242,14 @@ export default function Bankroll() {
               </Button>
             </div>
 
-            <nav className="px-4 space-y-2">
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3" 
-                onClick={() => { setSidebarOpen(false); navigate("/dashboard"); }}
-              >
-                <Upload className="h-4 w-4" />
-                Nova Análise
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3"
-                onClick={() => { setSidebarOpen(false); navigate("/history"); }}
-              >
-                <History className="h-4 w-4" />
-                Histórico
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3"
-                onClick={() => { setSidebarOpen(false); navigate("/statistics"); }}
-              >
-                <BarChart3 className="h-4 w-4" />
-                Estatísticas
-              </Button>
-              <Button 
-                variant="secondary" 
-                className="w-full justify-start gap-3"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <Wallet className="h-4 w-4" />
-                Gestão de Banca
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3"
-                onClick={() => { setSidebarOpen(false); navigate("/learning"); }}
-              >
-                <GraduationCap className="h-4 w-4" />
-                Aprendizado da IA
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3"
-                onClick={() => { setSidebarOpen(false); navigate("/settings"); }}
-              >
-                <Settings className="h-4 w-4" />
-                Configurações
-              </Button>
-            </nav>
+            <MobileSidebarNav
+              activePage="bankroll"
+              userPlan={profile?.current_plan || "free"}
+              userName={profile?.full_name || "Usuário"}
+              userInitial={profile?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
+              onSignOut={handleSignOut}
+              onClose={() => setSidebarOpen(false)}
+            />
 
             <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
               <div className="flex items-center gap-3 mb-4">
