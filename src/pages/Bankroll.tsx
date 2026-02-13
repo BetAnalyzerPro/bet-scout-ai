@@ -34,6 +34,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useBankroll, BankrollEntry } from "@/hooks/useBankroll";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { cn } from "@/lib/utils";
+import { canAccessBankrollFeature, getBankrollTier } from "@/lib/bankrollAccess";
+import type { BankrollFeature } from "@/lib/bankrollAccess";
 
 export default function Bankroll() {
   const navigate = useNavigate();
@@ -83,6 +85,11 @@ export default function Bankroll() {
   const [statusFilter, setStatusFilter] = useState("all");
 
   const alerts = generateAlerts();
+  const bankrollTier = getBankrollTier(currentPlan);
+  const canRegisterEntry = canAccessBankrollFeature("register_entry", currentPlan);
+  const canViewHistory = canAccessBankrollFeature("view_history", currentPlan);
+  const canUseSmartRiskFeature = canAccessBankrollFeature("smart_risk", currentPlan);
+  const canViewAdvancedStats = canAccessBankrollFeature("advanced_stats", currentPlan);
 
   // Initialize form with settings
   useEffect(() => {
@@ -307,6 +314,46 @@ export default function Bankroll() {
         </header>
 
         <div className="flex-1 p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6 max-w-5xl mx-auto w-full">
+          {/* FREE Plan Banner */}
+          {bankrollTier === "free" && (
+            <Card className="border-l-4 border-l-primary bg-primary/5">
+              <CardContent className="p-4 flex items-start gap-3">
+                <Lock className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-primary mb-2">
+                    🔒 A Gestão de Banca ajuda você a controlar risco e exposição.
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Disponível a partir do plano Basic.
+                  </p>
+                  <Button size="sm" onClick={() => navigate("/#planos")}>
+                    👉 Desbloquear Gestão de Banca
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* BASIC+ Plan Upsell Banner */}
+          {bankrollTier === "basic" && (
+            <Card className="border-l-4 border-l-primary/50 bg-primary/2">
+              <CardContent className="p-3 flex items-start gap-2">
+                <Lock className="h-4 w-4 text-primary/70 mt-0.5 shrink-0" />
+                <p className="text-xs text-muted-foreground">
+                  🔒 Análise comportamental avançada e Smart Risk disponíveis no plano Pro.
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="ml-2 h-auto p-0 text-primary underline"
+                    onClick={() => navigate("/#planos")}
+                  >
+                    Evoluir para Pro →
+                  </Button>
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Alerts Section */}
           {canSeeAlerts && alerts.length > 0 && (
             <div className="space-y-2">
@@ -342,6 +389,7 @@ export default function Bankroll() {
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-4 mt-4">
               {/* Section A - My Bankroll */}
+              <div className={bankrollTier === "free" ? "blur-sm pointer-events-none" : ""}>
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2">
@@ -412,13 +460,15 @@ export default function Bankroll() {
                   )}
                 </CardContent>
               </Card>
+              </div>
 
               {/* Section B - Smart Risk Adjustment */}
-              <Card className={!canUseSmartRisk ? "opacity-75" : ""}>
+              <div className={!canUseSmartRiskFeature ? "blur-sm" : ""}>
+              <Card className={!canUseSmartRiskFeature ? "opacity-75" : ""}>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2">
                     Ajuste Inteligente por Risco
-                    {!canUseSmartRisk && <Lock className="h-4 w-4 text-muted-foreground" />}
+                    {!canUseSmartRiskFeature && <Lock className="h-4 w-4 text-muted-foreground" />}
                   </CardTitle>
                   <CardDescription>
                     Quanto maior o risco do bilhete, menor a stake recomendada.
@@ -432,7 +482,7 @@ export default function Bankroll() {
                         Baixo: 1.0x | Médio: 0.7x | Alto: 0.4x
                       </p>
                     </div>
-                    {canUseSmartRisk ? (
+                    {canUseSmartRiskFeature ? (
                       <Switch
                         checked={smartRisk}
                         onCheckedChange={(checked) => {
@@ -462,9 +512,10 @@ export default function Bankroll() {
                         <p className="font-semibold text-risk-high">{formatCurrency(getAdjustedStake("high"))}</p>
                       </div>
                     </div>
-                  )}
+                   )}
                 </CardContent>
               </Card>
+              </div>
 
               {/* Section C - Exposure Cards */}
               <div className="grid gap-3 sm:grid-cols-3">
@@ -508,6 +559,17 @@ export default function Bankroll() {
 
             {/* Register Tab */}
             <TabsContent value="register" className="space-y-4 mt-4">
+              {bankrollTier === "free" && (
+                <Card className="border-l-4 border-l-primary bg-primary/5">
+                  <CardContent className="p-4 flex items-center gap-2">
+                    <Lock className="h-4 w-4 text-primary shrink-0" />
+                    <p className="text-xs text-muted-foreground">
+                      Registrar apostas é um recurso do plano Basic+.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+              <div className={bankrollTier === "free" ? "blur-sm pointer-events-none" : ""}>
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle>Registrar Aposta</CardTitle>
@@ -588,6 +650,7 @@ export default function Bankroll() {
                   </p>
                 </CardContent>
               </Card>
+              </div>
             </TabsContent>
 
             {/* Entries Tab */}
@@ -707,6 +770,17 @@ export default function Bankroll() {
 
             {/* Stats Tab */}
             <TabsContent value="stats" className="space-y-4 mt-4">
+              {bankrollTier === "free" && (
+                <Card className="border-l-4 border-l-primary bg-primary/5">
+                  <CardContent className="p-4 flex items-center gap-2">
+                    <Lock className="h-4 w-4 text-primary shrink-0" />
+                    <p className="text-xs text-muted-foreground">
+                      Estatísticas detalhadas são um recurso do plano Basic+.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+              <div className={bankrollTier === "free" ? "blur-sm" : ""}>
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle>Resumo do Mês</CardTitle>
@@ -753,6 +827,7 @@ export default function Bankroll() {
                   )}
                 </CardContent>
               </Card>
+              </div>
             </TabsContent>
           </Tabs>
         </div>

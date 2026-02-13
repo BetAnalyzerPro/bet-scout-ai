@@ -7,6 +7,13 @@ export type FeatureKey =
   | "export_data"
   | "priority_processing";
 
+export type BankrollFeature =
+  | "register_entry"
+  | "view_history"
+  | "smart_risk"
+  | "advanced_stats"
+  | "csv_export";
+
 interface FeatureConfig {
   label: string;
   minPlans: DatabasePlan[];
