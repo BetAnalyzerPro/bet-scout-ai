@@ -311,28 +311,6 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        {/* Appearance Section */}
-        <Card>
-          <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
-            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-              {theme === "dark" ? <Moon className="h-4 w-4 sm:h-5 sm:w-5" /> : <Sun className="h-4 w-4 sm:h-5 sm:w-5" />}
-              Aparência
-            </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Personalize a interface do aplicativo</CardDescription>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="flex items-center justify-between gap-3">
-              <div className="space-y-0.5">
-                <Label className="font-medium text-sm">Tema escuro</Label>
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  {theme === "dark" ? "Modo escuro ativado" : "Modo claro ativado"}
-                </p>
-              </div>
-              <Switch checked={theme === "dark"} onCheckedChange={toggleTheme} />
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Security Section */}
         <Card>
           <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
