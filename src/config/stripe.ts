@@ -3,23 +3,23 @@
 
 export const STRIPE_PRICES = {
   basic: {
-    priceId: "price_1Sxe4kRwAhX06SSdjtd46Hiu",
-    productId: "prod_TvV4mUHQqbMBG4",
-    amount: 4990, // R$ 49,90 in centavos
+    priceId: "price_1T0XphRwAhX06SSdYKwWEfKv",
+    productId: "prod_TyUpjaqtvGjH8X",
+    amount: 3700, // R$ 37,00 in centavos
     planKey: "basic",
     dbPlan: "intermediate", // Database enum value
   },
   pro: {
-    priceId: "price_1Sxe5JRwAhX06SSd1xJqgQZg",
-    productId: "prod_TvV5jk5hUrGLnH",
-    amount: 11990, // R$ 119,90 in centavos
+    priceId: "price_1T0XpxRwAhX06SSd7YZZsMea",
+    productId: "prod_TyUpkc1WKLaQUq",
+    amount: 9700, // R$ 97,00 in centavos
     planKey: "pro",
     dbPlan: "advanced", // Database enum value
   },
   elite: {
-    priceId: "price_1Sxe5tRwAhX06SSdxzdFb1Bh",
-    productId: "prod_TvV6VYdHaXgKq1",
-    amount: 24990, // R$ 249,90 in centavos
+    priceId: "price_1T0XqFRwAhX06SSdVFjpWbnI",
+    productId: "prod_TyUpz2QkrZxRnd",
+    amount: 19700, // R$ 197,00 in centavos
     planKey: "elite",
     dbPlan: "elite", // Database enum value
   },
