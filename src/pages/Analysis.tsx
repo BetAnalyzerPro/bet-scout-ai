@@ -551,21 +551,13 @@ export default function Analysis() {
                           </div>
                         )}
 
-                        {/* Match info */}
-                        {(bet.competition || bet.matchDate) && (
+                        {/* Match info - date only */}
+                        {bet.matchDate && (
                           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            {bet.competition && (
-                              <span className="flex items-center gap-1">
-                                <TrendingUp className="h-3 w-3" />
-                                {bet.competition}
-                              </span>
-                            )}
-                            {bet.matchDate && (
-                              <span className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {bet.matchDate}
-                              </span>
-                            )}
+                            <span className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {bet.matchDate}
+                            </span>
                           </div>
                         )}
                       </div>
